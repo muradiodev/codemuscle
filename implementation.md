@@ -933,3 +933,132 @@ GET  /api/auth/me
 Registration creates the user and returns a signed token. Login verifies the password hash and issues a one-hour HMAC-SHA256 JWT. `/me` demonstrates controller access to the validated `Jwt` principal through `@AuthenticationPrincipal`, returning its username, user ID, display name, and roles.
 
 The signing key comes from `JWT_SECRET`; the checked-in default is intended only for local training. Controllers rely on Spring Security's validated principal rather than performing unsafe manual token parsing.
+
+---
+
+## 31. Platform accounts, synchronized drafts, and account protection
+
+### Account database foundation
+
+An additive Prisma migration named `20260729223000_accounts_sync_backups_diagnostics` extends the existing database without resetting or deleting practice progress. It introduces:
+
+- Registered `User` accounts linked one-to-one with the existing `UserProfile`
+- Argon2id password hashes
+- Opaque, hashed server sessions
+- Email verification and password-reset tokens stored only as hashes
+- Concurrent browser devices and session revocation
+- Immutable profile and settings revisions
+- Encrypted user-backup metadata
+- Immutable draft documents and revisions
+- Editing leases
+- Security audit events
+- Legacy-progress claim records
+- Diagnostic occurrence records
+
+The migration was applied successfully to the existing development PostgreSQL database. The Prisma client was regenerated after stopping only the repository-local API process that held its Windows query-engine DLL.
+
+### Secure authentication
+
+The Express API now supports:
+
+```http
+POST /api/v1/auth/sign-up
+POST /api/v1/auth/sign-in
+POST /api/v1/auth/sign-out
+POST /api/v1/auth/sign-out-all
+GET  /api/v1/auth/session
+GET  /api/v1/auth/csrf
+POST /api/v1/auth/resend-verification
+POST /api/v1/auth/verify-email
+POST /api/v1/auth/forgot-password
+POST /api/v1/auth/reset-password
+POST /api/v1/auth/change-password
+```
+
+Passwords use configurable Argon2id parameters. Authentication uses an opaque random token whose SHA-256 hash is stored in PostgreSQL. The browser receives the raw token only in an `HttpOnly`, `SameSite=Lax` cookie, which is marked `Secure` in production. Unsafe authenticated requests require a matching CSRF cookie/header token and pass an origin allowlist check.
+
+Signup automatically creates a server session and signs the user in. Verification and password-reset messages use SMTP, with Mailpit-compatible local defaults. Password resets revoke existing sessions, and password changes revoke all sessions except the current one.
+
+Protected Next.js routes are guarded by middleware. Safe internal `returnTo` paths are preserved, while external, protocol-relative, and malformed redirect targets are rejected.
+
+### Signup device-name validation fix
+
+Signup and sign-in previously sent the complete browser user-agent string as `deviceName`. Modern user-agent strings can exceed the API's 100-character friendly-name limit and caused a `VALIDATION_ERROR`.
+
+The client now sends a compact name such as `Chrome on Win32`. The API also accepts a bounded user-agent-sized input and defensively truncates the stored friendly device name to 100 characters. The complete user-agent remains captured independently by the server as session metadata.
+
+### Device management and security history
+
+Account endpoints provide:
+
+- Account overview and aggregate practice totals
+- Device listing with current-device and active-session indicators
+- Friendly device renaming
+- Individual device revocation
+- Revocation of other sessions
+- Security-event history
+- Profile revision history
+- Settings revision history
+
+Every private query is scoped using the authenticated account/profile derived from the server session. The browser never supplies a user ID for ownership decisions. Older practice-session reads and mutations were also tightened to verify session ownership.
+
+### Multi-device draft safety
+
+The new draft API stores immutable revisions rather than silently overwriting one mutable row:
+
+```http
+GET    /api/v1/files/:fileId/draft
+PUT    /api/v1/files/:fileId/draft
+GET    /api/v1/files/:fileId/draft/revisions
+POST   /api/v1/files/:fileId/lease
+POST   /api/v1/files/:fileId/lease/heartbeat
+POST   /api/v1/files/:fileId/lease/takeover
+DELETE /api/v1/files/:fileId/lease
+```
+
+Autosaves include a `basedOnRevision`. Saves run in a serializable transaction and return `409 DRAFT_CONFLICT` with server revision, timestamps, and character counts when a device writes from stale state. Editing leases last 60 seconds, can be refreshed by heartbeat, and require an explicit takeover when another device is active.
+
+An authenticated Socket.IO transport uses the server-session cookie during its handshake and isolates connections in per-user rooms. Helpers support user-scoped events and immediate socket disconnection after session or device revocation.
+
+### Encrypted account backups
+
+A backup storage abstraction and local filesystem implementation are present. Backup payloads exclude password hashes, authentication sessions, verification/reset tokens, and raw security logs. Before storage they are:
+
+1. Serialized as versioned JSON.
+2. Compressed with gzip.
+3. Encrypted with AES-256-GCM.
+4. Protected with a SHA-256 checksum.
+
+Production requires a valid base64-encoded 32-byte `BACKUP_ENCRYPTION_KEY`; local development uses a development-only derived key. Backup reads verify ownership, checksum, encryption authentication, and schema version. Restore requires a verified email and current password, creates a pre-restore backup, clears active editing leases, preserves account credentials, records an audit event, and runs database changes transactionally.
+
+Account backup endpoints and UI support listing, manual creation, metadata preview, download, restore, and soft deletion. Physical backup deletion is intentionally disabled under the repository's no-file-deletion safety constraint.
+
+### Frontend account experience
+
+The web application includes:
+
+- `/auth/sign-up`
+- `/auth/sign-in`
+- `/auth/forgot-password`
+- `/auth/reset-password`
+- `/auth/verify-email`
+- `/account`
+- `/account/security`
+- `/account/devices`
+- `/account/history`
+- `/account/backups`
+- `/privacy`
+- `/terms`
+
+The navigation now shows account initials, account links, verification status, and sign-out. Unverified users receive a dismissible verification banner with resend support. API requests include credentials and automatically attach the readable CSRF token to unsafe operations.
+
+### Validation completed for this increment
+
+The following checks were executed successfully after the device-name correction:
+
+```text
+@codemuscle/api typecheck
+@codemuscle/web typecheck
+```
+
+The database migration also completed successfully. Full release validation, Java language-server integration, diagnostic presentation, backup retention/S3 support, and the complete requested end-to-end suite remain separate implementation work and are not represented here as completed.

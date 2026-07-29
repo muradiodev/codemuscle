@@ -1,0 +1,1 @@
+export default function Page(){return <main className="page"><h1>Terms</h1><p>Use CodeMuscle for deliberate coding practice. You remain responsible for protecting your account credentials and exported backup files.</p></main>}

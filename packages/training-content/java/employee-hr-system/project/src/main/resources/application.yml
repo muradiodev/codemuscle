@@ -3,3 +3,6 @@ spring:
     name: employee-hr-system
 server:
   port: 8080
+security:
+  jwt:
+    secret: ${JWT_SECRET:codemuscle-local-development-secret-key-2026}

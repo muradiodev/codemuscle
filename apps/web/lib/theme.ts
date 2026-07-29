@@ -2,16 +2,19 @@ import type * as Monaco from "monaco-editor";
 
 export type ThemePreference = "dark" | "light" | "system";
 
-/** Classic IntelliJ Darcula editor chrome + Java syntax colors. */
+/**
+ * Editor chrome matches the app global dark palette; Java tokens stay IntelliJ-colored.
+ * (Avoid Darcula #2B2B2B — reads muddy/brown against the cooler UI.)
+ */
 export const intellijDarcula = {
-  background: "#2B2B2B",
-  foreground: "#A9B7C6",
-  gutter: "#313335",
-  lineNumber: "#606366",
-  lineNumberActive: "#A4A3A3",
-  lineHighlight: "#323232",
+  background: "#0d1117",
+  foreground: "#d8dee9",
+  gutter: "#0d1117",
+  lineNumber: "#8b98a8",
+  lineNumberActive: "#d8dee9",
+  lineHighlight: "#171e27",
   selection: "#214283",
-  cursor: "#BBBBBB",
+  cursor: "#d8dee9",
   keyword: "#CC7832",
   string: "#6A8759",
   number: "#6897BB",
@@ -21,8 +24,8 @@ export const intellijDarcula = {
   staticMember: "#9876AA",
   method: "#FFC66D",
   invalid: "#BC3F3C",
-  suggestBackground: "#3C3F41",
-  suggestBorder: "#55585A",
+  suggestBackground: "#121820",
+  suggestBorder: "#29313d",
   suggestSelected: "#2F65CA",
   suggestHighlight: "#FFC66D"
 } as const;
@@ -103,21 +106,21 @@ export function configureJavaEditorThemes(monaco: typeof Monaco): void {
       "editor.findMatchBackground": "#32593D",
       "editor.findMatchHighlightBackground": "#3A3A0080",
       "editorCursor.foreground": d.cursor,
-      "editorWhitespace.foreground": "#504945",
-      "editorIndentGuide.background1": "#404040",
-      "editorIndentGuide.activeBackground1": "#707070",
-      "editorBracketMatch.background": "#3B514D",
-      "editorBracketMatch.border": "#A9B7C680",
+      "editorWhitespace.foreground": "#29313d",
+      "editorIndentGuide.background1": "#222b36",
+      "editorIndentGuide.activeBackground1": "#29313d",
+      "editorBracketMatch.background": "#202a36",
+      "editorBracketMatch.border": "#8b98a880",
       "editorSuggestWidget.background": d.suggestBackground,
       "editorSuggestWidget.border": d.suggestBorder,
-      "editorSuggestWidget.foreground": "#D7D7D7",
+      "editorSuggestWidget.foreground": "#d8dee9",
       "editorSuggestWidget.selectedBackground": d.suggestSelected,
       "editorSuggestWidget.highlightForeground": d.suggestHighlight,
       "editorWidget.background": d.suggestBackground,
       "editorWidget.border": d.suggestBorder,
-      "scrollbarSlider.background": "#79797966",
-      "scrollbarSlider.hoverBackground": "#646464B3",
-      "scrollbarSlider.activeBackground": "#A6A6A6B3"
+      "scrollbarSlider.background": "#29313d99",
+      "scrollbarSlider.hoverBackground": "#8b98a866",
+      "scrollbarSlider.activeBackground": "#8b98a899"
     }
   });
 

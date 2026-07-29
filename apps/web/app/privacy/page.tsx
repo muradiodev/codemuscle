@@ -1,0 +1,1 @@
+export default function Page(){return <main className="page"><h1>Privacy</h1><p>CodeMuscle stores account and practice data only to provide synchronization, diagnostics, history, and backups. It does not send typed code to AI services or external telemetry providers.</p></main>}

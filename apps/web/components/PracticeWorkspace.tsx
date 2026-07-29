@@ -119,6 +119,8 @@ export function PracticeWorkspace({
   const creatingSessionRef = useRef<Promise<string> | null>(null);
   const suppressAutoStartRef = useRef(false);
   const typedRef = useRef(restored?.draft?.typedCode ?? starterCode);
+  const completionsDisposable = useRef<Monaco.IDisposable | null>(null);
+  const monacoRef = useRef<typeof Monaco | null>(null);
   const running = Boolean(session) && !paused;
 
   const comparison = useMemo(
@@ -197,6 +199,23 @@ export function PracticeWorkspace({
     };
   }, [wireScrollSync, referenceMode, referenceValue]);
 
+  useEffect(() => {
+    if (!monacoRef.current) return;
+    completionsDisposable.current?.dispose();
+    completionsDisposable.current = registerJavaCompletions(
+      monacoRef.current,
+      file.referenceCode
+    );
+  }, [file.referenceCode]);
+
+  useEffect(
+    () => () => {
+      completionsDisposable.current?.dispose();
+      completionsDisposable.current = null;
+    },
+    []
+  );
+
   const ensureSession = useCallback(async () => {
     if (sessionRef.current) return sessionRef.current;
     if (!creatingSessionRef.current) {
@@ -248,9 +267,11 @@ export function PracticeWorkspace({
 
   const onTypingMount = (editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof Monaco) => {
     typingEditorRef.current = editor;
+    monacoRef.current = monaco;
     configureJavaEditorThemes(monaco);
     monaco.editor.setTheme(monacoTheme);
-    registerJavaCompletions(monaco, file.referenceCode);
+    completionsDisposable.current?.dispose();
+    completionsDisposable.current = registerJavaCompletions(monaco, file.referenceCode);
     editor.onKeyDown(e => {
       counters.current.keys++;
       if (e.keyCode === monaco.KeyCode.Backspace) counters.current.backspaces++;
@@ -451,8 +472,11 @@ export function PracticeWorkspace({
                   bracketPairColorization: { enabled: true },
                   multiCursorModifier: "ctrlCmd",
                   find: { addExtraSpaceOnTop: false },
-                  suggest: { showSnippets: true },
-                  quickSuggestions: true
+                  suggest: { showSnippets: true, showWords: false },
+                  // Suggest from the complete reference file while typing; never inside "".
+                  quickSuggestions: { other: true, comments: false, strings: false },
+                  suggestOnTriggerCharacters: true,
+                  wordBasedSuggestions: "off"
                 }}
               />
             </div>

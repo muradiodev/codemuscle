@@ -151,13 +151,14 @@ export function Explorer({
           <JavaFileIcon path={node.path} fileName={node.name} />
         );
       return (
-        <div key={node.path}>
+        <div key={node.path} className="tree-node">
           <div
             ref={node.fileId === currentFile ? activeRow : undefined}
             role="treeitem"
             tabIndex={0}
             className={`tree-row ${node.fileId === currentFile ? "active" : ""}`}
             style={{ paddingLeft: 5 + depth * 14 }}
+            title={node.name}
             onClick={() => (node.type === "folder" ? toggle(node.path) : onFile(node.fileId!))}
             onKeyDown={e => {
               if (e.key === "Enter") {

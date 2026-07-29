@@ -18,8 +18,12 @@ export const errorHandler: ErrorRequestHandler = (error, _request, response, _ne
   }
   const status = typeof error?.status === "number" ? error.status : 500;
   if (status >= 400 && status < 500) {
+    const code =
+      typeof error === "object" && error && "code" in error && typeof error.code === "string"
+        ? error.code
+        : "REQUEST_ERROR";
     return response.status(status).json({
-      error: { code: "REQUEST_ERROR", message: error instanceof Error ? error.message : "Request failed", details: [] }
+      error: { code, message: error instanceof Error ? error.message : "Request failed", details: [] }
     });
   }
   response.status(500).json({ error: { code: "INTERNAL_ERROR", message: "An unexpected error occurred.", details: [] } });

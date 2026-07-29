@@ -1,7 +1,7 @@
 import "./globals.css";
-import Link from "next/link";
 import { JetBrains_Mono } from "next/font/google";
 import { Providers } from "./providers";
+import { AppChrome } from "../components/AppChrome";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -19,19 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en" suppressHydrationWarning data-theme="dark" className={jetbrainsMono.variable}>
       <body>
         <Providers>
-          <nav className="app-nav">
-            <Link className="brand" href="/">
-              CodeMuscle
-            </Link>
-            <div className="nav-links">
-              <Link href="/">Today</Link>
-              <Link href="/projects">Projects</Link>
-              <Link href="/statistics">Statistics</Link>
-              <Link href="/sessions">Sessions</Link>
-              <Link href="/settings">Settings</Link>
-            </div>
-          </nav>
-          {children}
+          <AppChrome>{children}</AppChrome>
         </Providers>
       </body>
     </html>

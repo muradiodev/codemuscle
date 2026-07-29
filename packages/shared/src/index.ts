@@ -19,6 +19,34 @@ export const settingsSchema = z.object({
 export type UserSettings = z.infer<typeof settingsSchema>;
 
 export const profilePatchSchema = z.object({ displayName: z.string().trim().min(1).max(80) });
+export const signUpSchema = z.object({
+  displayName: z.string().trim().min(1).max(80),
+  email: z.string().trim().email().max(254),
+  password: z.string().min(10).max(128),
+  confirmPassword: z.string(),
+  termsAccepted: z.literal(true),
+  deviceKey: z.string().min(8).max(200),
+  deviceName: z.string().max(500).optional()
+}).refine(value => value.password === value.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "Passwords do not match."
+});
+export const signInSchema = z.object({
+  email: z.string().trim().email().max(254),
+  password: z.string().min(1).max(128),
+  rememberMe: z.boolean().default(false),
+  deviceKey: z.string().min(8).max(200),
+  deviceName: z.string().max(500).optional()
+});
+export const forgotPasswordSchema = z.object({ email: z.string().trim().email().max(254) });
+export const resetPasswordSchema = z.object({
+  token: z.string().min(32).max(500),
+  password: z.string().min(10).max(128),
+  confirmPassword: z.string()
+}).refine(value => value.password === value.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "Passwords do not match."
+});
 export const sessionCreateSchema = z.object({ projectId: z.string().min(1), fileId: z.string().min(1), comparisonMode: z.enum(comparisonModes).default("syntax") });
 export const sessionPatchSchema = z.object({
   activeDurationMs: z.number().int().nonnegative().optional(),

@@ -227,6 +227,104 @@
       "topics": [
         "spring-configuration"
       ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/security/PlatformUser.java",
+      "difficulty": "intermediate",
+      "order": 22,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-security",
+        "jwt",
+        "authentication",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/security/UserRepository.java",
+      "difficulty": "intermediate",
+      "order": 23,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-security",
+        "jwt",
+        "authentication",
+        "validation",
+        "collections",
+        "concurrency"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/security/RegisterRequest.java",
+      "difficulty": "warmup",
+      "order": 24,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-security",
+        "jwt",
+        "authentication",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/security/LoginRequest.java",
+      "difficulty": "warmup",
+      "order": 25,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-security",
+        "jwt",
+        "authentication",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/security/TokenResponse.java",
+      "difficulty": "warmup",
+      "order": 26,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-security",
+        "jwt",
+        "authentication",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/security/JwtAuthenticationService.java",
+      "difficulty": "advanced",
+      "order": 27,
+      "estimatedMinutes": 11,
+      "topics": [
+        "spring-security",
+        "jwt",
+        "authentication",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/security/SecurityConfiguration.java",
+      "difficulty": "advanced",
+      "order": 28,
+      "estimatedMinutes": 10,
+      "topics": [
+        "spring-security",
+        "jwt",
+        "authentication",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/controller/AuthController.java",
+      "difficulty": "advanced",
+      "order": 29,
+      "estimatedMinutes": 8,
+      "topics": [
+        "spring-security",
+        "jwt",
+        "authentication",
+        "validation"
+      ]
     }
   ]
 }

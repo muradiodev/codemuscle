@@ -407,14 +407,14 @@ Mark / unmark repetition:
 
 Shared type `LanguageDefinition` supports future languages (extensions, Monaco id, completion catalog, comparison strategy).
 
-### Java practice projects (80 files)
+### Java practice projects (112 files)
 
 | Project | Slug | Package | Files | Focus |
 |---|---|---|---|---|
-| Employee HR Management System | `employee-hr-system` | `com.codemuscle.hr` | 21 | Employees, departments, leave, salary validation, streams |
-| Logistics and Shipment Management System | `logistics-system` | `com.codemuscle.logistics` | 19 | Shipments, warehouses, tracking, cost strategies |
-| Energy Consumption and Billing System | `energy-billing-system` | `com.codemuscle.energy` | 20 | Meter readings, tariffs, BigDecimal billing |
-| Multi-Tenant B2B SaaS Platform | `b2b-saas-platform` | `com.codemuscle.saas` | 20 | Tenants, roles, permissions, usage limits |
+| Employee HR Management System | `employee-hr-system` | `com.codemuscle.hr` | 29 | Employees, departments, leave, salary validation, streams, JWT security |
+| Logistics and Shipment Management System | `logistics-system` | `com.codemuscle.logistics` | 27 | Shipments, warehouses, tracking, cost strategies, JWT security |
+| Energy Consumption and Billing System | `energy-billing-system` | `com.codemuscle.energy` | 28 | Meter readings, tariffs, BigDecimal billing, JWT security |
+| Multi-Tenant B2B SaaS Platform | `b2b-saas-platform` | `com.codemuscle.saas` | 28 | Tenants, roles, permissions, usage limits, JWT security |
 
 Each project includes:
 
@@ -703,7 +703,7 @@ Web and API both consume these contracts to avoid duplicated types.
 - [x] Three-pane practice workspace  
 - [x] Explorer with search, expand/collapse, resize, hide  
 - [x] Java active / Python coming soon  
-- [x] Four complete Java Spring Boot projects (80 practice files)  
+- [x] Four complete Java Spring Boot projects (112 practice files)  
 - [x] Paste blocked by default + accessibility override  
 - [x] Deterministic completions (System/collections/annotations/generics/reference symbols)  
 - [x] Syntax and strict comparison modes  
@@ -901,3 +901,35 @@ Both Monaco panes use CodeMuscle Java dark/light themes with an IntelliJ-inspire
 - Distinct line highlight, selection, caret, indent guides, line numbers, and suggestion widget states
 
 The palette is applied equally to the typing and read-only reference editors and follows the selected light, dark, or system theme.
+
+### Complete Java keyword completion
+
+The deterministic Monaco provider includes the complete Java keyword catalog and the `true`, `false`, and `null` literals. Declaration keywords such as `public`, `protected`, `private`, `class`, `interface`, `record`, and `enum` are included alongside control-flow, exception, inheritance, modifier, primitive-type, and concurrency keywords.
+
+Keyword results use Monaco's keyword icon and insert only the selected keyword. Prefix filtering means inputs such as `pub`, `inter`, `synch`, and `throw` immediately narrow the completion list without inserting a large code block.
+
+### Annotation completion reliability
+
+Typing bare `@` or a prefix such as `@Rest`, `@Get`, `@Data`, or `@Map` opens annotation completions. The completion edit replaces the complete `@prefix` range, while its automatic import edit is anchored to the package declaration so the edits never overlap. This supports Spring Boot, Spring MVC, Spring stereotypes/configuration, validation, transactions, Lombok, JPA, MapStruct, and custom annotations discovered in the reference file.
+
+---
+
+## 30. JWT authentication in every Java project
+
+All four Spring Boot reference projects implement the same stateless JWT security boundary.
+
+Each project includes Spring Security, OAuth2 resource-server/Jose support, BCrypt password hashing, and a `SecurityConfiguration`. Registration and login are public; every other endpoint requires a valid bearer token. Missing, expired, or invalid tokens are rejected by the security filter chain before business-controller invocation.
+
+`PlatformUser` stores a stable ID, username, BCrypt password hash, email, display name, job title, locale, roles, enabled state, and creation timestamp. Plaintext passwords exist only in validated registration/login request DTOs and are never persisted or returned.
+
+Authentication endpoints:
+
+```http
+POST /api/auth/register
+POST /api/auth/login
+GET  /api/auth/me
+```
+
+Registration creates the user and returns a signed token. Login verifies the password hash and issues a one-hour HMAC-SHA256 JWT. `/me` demonstrates controller access to the validated `Jwt` principal through `@AuthenticationPrincipal`, returning its username, user ID, display name, and roles.
+
+The signing key comes from `JWT_SECRET`; the checked-in default is intended only for local training. Controllers rely on Spring Security's validated principal rather than performing unsafe manual token parsing.

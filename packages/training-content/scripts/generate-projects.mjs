@@ -36,6 +36,14 @@ const pom = (artifact, name) => `<?xml version="1.0" encoding="UTF-8"?>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
@@ -86,6 +94,9 @@ const yml = (name) => `spring:
     name: ${name}
 server:
   port: 8080
+security:
+  jwt:
+    secret: \${JWT_SECRET:codemuscle-local-development-secret-key-2026}
 `;
 
 function write(projectDir, relative, content) {
@@ -95,6 +106,7 @@ function write(projectDir, relative, content) {
 }
 
 function writeManifest(slug, meta, files) {
+  const allFiles = [...files, ...securityFiles(slug)];
   const dir = join(root, slug);
   write(dir, "manifest.json", JSON.stringify({
     id: slug,
@@ -104,7 +116,7 @@ function writeManifest(slug, meta, files) {
     description: meta.description,
     difficulty: meta.difficulty,
     order: meta.order,
-    files: files.map((f, i) => ({
+    files: allFiles.map((f, i) => ({
       path: f.path,
       difficulty: f.difficulty ?? "intermediate",
       order: f.order ?? i + 1,
@@ -114,9 +126,268 @@ function writeManifest(slug, meta, files) {
   }, null, 2));
   write(dir, "project/pom.xml", pom(slug, meta.name));
   write(dir, "project/src/main/resources/application.yml", yml(slug));
-  for (const f of files) write(dir, join("project", f.path), f.code);
+  for (const f of allFiles) write(dir, join("project", f.path), f.code);
   if (meta.test) write(dir, join("project", meta.test.path), meta.test.code);
-  console.log(`${slug}: ${files.length} practice files`);
+  console.log(`${slug}: ${allFiles.length} practice files`);
+}
+
+function securityFiles(slug) {
+  const packages = {
+    "employee-hr-system": "com.codemuscle.hr",
+    "logistics-system": "com.codemuscle.logistics",
+    "energy-billing-system": "com.codemuscle.energy",
+    "b2b-saas-platform": "com.codemuscle.saas"
+  };
+  const base = packages[slug];
+  const p = `src/main/java/${base.replaceAll(".", "/")}`;
+  const topics = ["spring-security", "jwt", "authentication", "validation"];
+  return [
+    { path: `${p}/security/PlatformUser.java`, difficulty: "intermediate", topics, code: `package ${base}.security;
+
+import java.time.Instant;
+import java.util.Set;
+
+public record PlatformUser(
+        String id,
+        String username,
+        String passwordHash,
+        String email,
+        String displayName,
+        String jobTitle,
+        String locale,
+        Set<String> roles,
+        boolean enabled,
+        Instant createdAt
+) {
+    public PlatformUser {
+        roles = Set.copyOf(roles);
+    }
+}
+` },
+    { path: `${p}/security/UserRepository.java`, difficulty: "intermediate", topics: [...topics, "collections", "concurrency"], code: `package ${base}.security;
+
+import org.springframework.stereotype.Repository;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Repository
+public class UserRepository {
+    private final ConcurrentHashMap<String, PlatformUser> usersByName = new ConcurrentHashMap<>();
+
+    public PlatformUser save(PlatformUser user) {
+        PlatformUser existing = usersByName.putIfAbsent(user.username().toLowerCase(), user);
+        if (existing != null) {
+            throw new IllegalStateException("Username is already registered");
+        }
+        return user;
+    }
+
+    public Optional<PlatformUser> findByUsername(String username) {
+        return Optional.ofNullable(usersByName.get(username.toLowerCase()));
+    }
+}
+` },
+    { path: `${p}/security/RegisterRequest.java`, difficulty: "warmup", topics, code: `package ${base}.security;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record RegisterRequest(
+        @NotBlank @Size(min = 3, max = 60) String username,
+        @NotBlank @Size(min = 10, max = 100) String password,
+        @NotBlank @Email String email,
+        @NotBlank String displayName,
+        String jobTitle,
+        String locale
+) {}
+` },
+    { path: `${p}/security/LoginRequest.java`, difficulty: "warmup", topics, code: `package ${base}.security;
+
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginRequest(@NotBlank String username, @NotBlank String password) {}
+` },
+    { path: `${p}/security/TokenResponse.java`, difficulty: "warmup", topics, code: `package ${base}.security;
+
+import java.time.Instant;
+import java.util.Set;
+
+public record TokenResponse(
+        String accessToken,
+        String tokenType,
+        Instant expiresAt,
+        String username,
+        String displayName,
+        Set<String> roles
+) {}
+` },
+    { path: `${p}/security/JwtAuthenticationService.java`, difficulty: "advanced", topics, code: `package ${base}.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.stereotype.Service;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Set;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class JwtAuthenticationService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtEncoder jwtEncoder;
+
+    public TokenResponse register(RegisterRequest request) {
+        PlatformUser user = new PlatformUser(
+                UUID.randomUUID().toString(),
+                request.username(),
+                passwordEncoder.encode(request.password()),
+                request.email(),
+                request.displayName(),
+                request.jobTitle(),
+                request.locale() == null ? "en" : request.locale(),
+                Set.of("ROLE_USER"),
+                true,
+                Instant.now()
+        );
+        return issue(userRepository.save(user));
+    }
+
+    public TokenResponse login(LoginRequest request) {
+        PlatformUser user = userRepository.findByUsername(request.username())
+                .filter(PlatformUser::enabled)
+                .filter(candidate -> passwordEncoder.matches(request.password(), candidate.passwordHash()))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+        return issue(user);
+    }
+
+    private TokenResponse issue(PlatformUser user) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plus(60, ChronoUnit.MINUTES);
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("codemuscle")
+                .issuedAt(now)
+                .expiresAt(expiresAt)
+                .subject(user.username())
+                .claim("roles", user.roles())
+                .claim("displayName", user.displayName())
+                .claim("userId", user.id())
+                .build();
+        String token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return new TokenResponse(token, "Bearer", expiresAt, user.username(), user.displayName(), user.roles());
+    }
+}
+` },
+    { path: `${p}/security/SecurityConfiguration.java`, difficulty: "advanced", topics, code: `package ${base}.security;
+
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+
+@Configuration
+@EnableMethodSecurity
+public class SecurityConfiguration {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(resourceServer -> resourceServer.jwt(jwt -> {}))
+                .build();
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    SecretKey jwtSecretKey(@Value("\${security.jwt.secret}") String secret) {
+        return new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+    }
+
+    @Bean
+    JwtDecoder jwtDecoder(SecretKey secretKey) {
+        return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
+    }
+
+    @Bean
+    JwtEncoder jwtEncoder(SecretKey secretKey) {
+        return new NimbusJwtEncoder(new ImmutableSecret<>(secretKey));
+    }
+}
+` },
+    { path: `${p}/controller/AuthController.java`, difficulty: "advanced", topics, code: `package ${base}.controller;
+
+import ${base}.security.JwtAuthenticationService;
+import ${base}.security.LoginRequest;
+import ${base}.security.RegisterRequest;
+import ${base}.security.TokenResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+    private final JwtAuthenticationService authenticationService;
+
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TokenResponse register(@Valid @RequestBody RegisterRequest request) {
+        return authenticationService.register(request);
+    }
+
+    @PostMapping("/login")
+    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
+        return authenticationService.login(request);
+    }
+
+    @GetMapping("/me")
+    public Map<String, Object> currentUser(@AuthenticationPrincipal Jwt token) {
+        return Map.of(
+                "username", token.getSubject(),
+                "userId", token.getClaimAsString("userId"),
+                "displayName", token.getClaimAsString("displayName"),
+                "roles", token.getClaimAsStringList("roles")
+        );
+    }
+}
+` }
+  ];
 }
 
 // ─── 1. Employee HR ───────────────────────────────────────────────────────────

@@ -24,4 +24,14 @@ describe("training content catalog", () => {
     });
     expect(new Set(packages).size).toBe(4);
   });
+
+  it("includes JWT security and user profiles in every project", () => {
+    for (const project of trainingProjects) {
+      const paths = project.files.map((file) => file.path);
+      expect(paths.some((path) => path.endsWith("/controller/AuthController.java"))).toBe(true);
+      expect(paths.some((path) => path.endsWith("/security/SecurityConfiguration.java"))).toBe(true);
+      expect(paths.some((path) => path.endsWith("/security/PlatformUser.java"))).toBe(true);
+      expect(paths.some((path) => path.endsWith("/security/JwtAuthenticationService.java"))).toBe(true);
+    }
+  });
 });

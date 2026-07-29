@@ -1,9 +1,10 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 enum SessionStatus {
@@ -12,182 +13,450 @@ enum SessionStatus {
   COMPLETED
   ABANDONED
 }
+
 enum ComparisonMode {
   SYNTAX
   STRICT
 }
 
+enum UserStatus {
+  ACTIVE
+  DISABLED
+  DELETION_PENDING
+  DELETED
+}
+
+enum BackupType {
+  AUTOMATIC
+  MANUAL
+  PRE_RESTORE
+  PRE_MIGRATION
+}
+
+enum BackupStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  DELETED
+}
+
 model UserProfile {
-  id String @id @default(cuid())
-  displayName String @default("Local Developer")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  settings UserSettings?
-  sessions PracticeSession[]
-  goals PracticeGoal[]
-  achievements UserAchievement[]
-  dailyMetrics DailyMetric[]
-  repeats Repetition[]
+  id             String                 @id @default(cuid())
+  displayName    String                 @default("Local Developer")
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  settings       UserSettings?
+  sessions       PracticeSession[]
+  goals          PracticeGoal[]
+  achievements   UserAchievement[]
+  dailyMetrics   DailyMetric[]
+  repeats        Repetition[]
+  account        User?
+  draftDocuments DraftDocument[]
+  diagnostics    DiagnosticOccurrence[]
 }
+
+model User {
+  id                  String                   @id @default(cuid())
+  email               String                   @unique
+  normalizedEmail     String                   @unique
+  passwordHash        String
+  emailVerifiedAt     DateTime?
+  status              UserStatus               @default(ACTIVE)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  lastSignedInAt      DateTime?
+  deletedAt           DateTime?
+  profileId           String                   @unique
+  profile             UserProfile              @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  authSessions        AuthSession[]
+  verificationTokens  EmailVerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  devices             UserDevice[]
+  backups             UserBackup[]
+  profileRevisions    ProfileRevision[]
+  settingsRevisions   SettingsRevision[]
+  securityEvents      SecurityEvent[]
+  legacyClaims        LegacyProgressClaim[]
+}
+
+model AuthSession {
+  id                String      @id @default(cuid())
+  userId            String
+  tokenHash         String      @unique
+  csrfTokenHash     String
+  deviceId          String?
+  createdAt         DateTime    @default(now())
+  lastSeenAt        DateTime    @default(now())
+  expiresAt         DateTime
+  absoluteExpiresAt DateTime
+  revokedAt         DateTime?
+  ipHash            String?
+  userAgent         String?
+  rememberMe        Boolean     @default(false)
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device            UserDevice? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+}
+
+model UserDevice {
+  id          String        @id @default(cuid())
+  userId      String
+  deviceKey   String
+  displayName String?
+  platform    String?
+  browser     String?
+  firstSeenAt DateTime      @default(now())
+  lastSeenAt  DateTime      @default(now())
+  trustedAt   DateTime?
+  revokedAt   DateTime?
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions    AuthSession[]
+
+  @@unique([userId, deviceKey])
+  @@index([userId, lastSeenAt])
+}
+
+model EmailVerificationToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  consumedAt DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model PasswordResetToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  consumedAt DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
 model UserSettings {
-  id String @id @default(cuid())
-  userId String @unique
-  user UserProfile @relation(fields:[userId], references:[id], onDelete:Cascade)
-  theme String @default("dark")
-  editorFontSize Int @default(14)
-  tabSize Int @default(4)
-  wordWrap Boolean @default(false)
-  minimapEnabled Boolean @default(false)
-  synchronizedScrolling Boolean @default(false)
-  pasteAllowed Boolean @default(false)
-  comparisonMode ComparisonMode @default(SYNTAX)
-  dailyGoalMinutes Int @default(30)
-  onboardingComplete Boolean @default(false)
+  id                    String         @id @default(cuid())
+  userId                String         @unique
+  user                  UserProfile    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme                 String         @default("dark")
+  editorFontSize        Int            @default(14)
+  tabSize               Int            @default(4)
+  wordWrap              Boolean        @default(false)
+  minimapEnabled        Boolean        @default(false)
+  synchronizedScrolling Boolean        @default(false)
+  pasteAllowed          Boolean        @default(false)
+  comparisonMode        ComparisonMode @default(SYNTAX)
+  dailyGoalMinutes      Int            @default(30)
+  onboardingComplete    Boolean        @default(false)
 }
+
 model Language {
-  id String @id
-  name String
-  enabled Boolean @default(true)
-  comingSoon Boolean @default(false)
-  projects TrainingProject[]
+  id         String            @id
+  name       String
+  enabled    Boolean           @default(true)
+  comingSoon Boolean           @default(false)
+  projects   TrainingProject[]
 }
+
 model TrainingProject {
-  id String @id
-  slug String @unique
-  name String
+  id          String            @id
+  slug        String            @unique
+  name        String
   description String
-  languageId String
-  language Language @relation(fields:[languageId], references:[id])
-  difficulty String
-  version String
-  order Int
-  enabled Boolean @default(true)
-  files TrainingFile[]
-  sessions PracticeSession[]
+  languageId  String
+  language    Language          @relation(fields: [languageId], references: [id])
+  difficulty  String
+  version     String
+  order       Int
+  enabled     Boolean           @default(true)
+  files       TrainingFile[]
+  sessions    PracticeSession[]
 }
+
 model TrainingFile {
-  id String @id
-  projectId String
-  project TrainingProject @relation(fields:[projectId], references:[id], onDelete:Cascade)
-  path String
-  fileName String
-  referenceCode String
-  difficulty String
+  id               String                 @id
+  projectId        String
+  project          TrainingProject        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  path             String
+  fileName         String
+  referenceCode    String
+  difficulty       String
   estimatedMinutes Int
-  order Int
-  enabled Boolean @default(true)
-  contentHash String
-  topics TrainingFileTopic[]
-  sessions PracticeSession[]
-  repeats Repetition[]
-  @@unique([projectId,path])
-  @@index([projectId,order])
+  order            Int
+  enabled          Boolean                @default(true)
+  contentHash      String
+  topics           TrainingFileTopic[]
+  sessions         PracticeSession[]
+  repeats          Repetition[]
+  draftDocuments   DraftDocument[]
+  diagnostics      DiagnosticOccurrence[]
+
+  @@unique([projectId, path])
+  @@index([projectId, order])
 }
+
 model Topic {
-  id String @id @default(cuid())
-  slug String @unique
-  name String
+  id    String              @id @default(cuid())
+  slug  String              @unique
+  name  String
   files TrainingFileTopic[]
 }
+
 model TrainingFileTopic {
-  fileId String
+  fileId  String
   topicId String
-  file TrainingFile @relation(fields:[fileId], references:[id], onDelete:Cascade)
-  topic Topic @relation(fields:[topicId], references:[id], onDelete:Cascade)
-  @@id([fileId,topicId])
+  file    TrainingFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  topic   Topic        @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@id([fileId, topicId])
 }
+
 model PracticeSession {
-  id String @id @default(cuid())
-  userId String
-  projectId String
-  fileId String
-  user UserProfile @relation(fields:[userId], references:[id])
-  project TrainingProject @relation(fields:[projectId], references:[id])
-  file TrainingFile @relation(fields:[fileId], references:[id])
-  startedAt DateTime @default(now())
-  completedAt DateTime?
-  activeDurationMs Int @default(0)
-  pausedDurationMs Int @default(0)
-  status SessionStatus @default(ACTIVE)
-  comparisonMode ComparisonMode @default(SYNTAX)
-  lastResumedAt DateTime @default(now())
-  attempts FileAttempt[]
-  draft SavedDraft?
-  @@index([userId,startedAt])
-  @@index([projectId,fileId])
+  id               String                 @id @default(cuid())
+  userId           String
+  projectId        String
+  fileId           String
+  user             UserProfile            @relation(fields: [userId], references: [id])
+  project          TrainingProject        @relation(fields: [projectId], references: [id])
+  file             TrainingFile           @relation(fields: [fileId], references: [id])
+  startedAt        DateTime               @default(now())
+  completedAt      DateTime?
+  activeDurationMs Int                    @default(0)
+  pausedDurationMs Int                    @default(0)
+  status           SessionStatus          @default(ACTIVE)
+  comparisonMode   ComparisonMode         @default(SYNTAX)
+  lastResumedAt    DateTime               @default(now())
+  attempts         FileAttempt[]
+  draft            SavedDraft?
+  draftRevisions   DraftRevision[]
+  diagnostics      DiagnosticOccurrence[]
+
+  @@index([userId, startedAt])
+  @@index([projectId, fileId])
 }
+
 model FileAttempt {
-  id String @id @default(cuid())
-  sessionId String
-  session PracticeSession @relation(fields:[sessionId], references:[id], onDelete:Cascade)
-  createdAt DateTime @default(now())
-  typedCode String
-  completionPercentage Float
-  characterAccuracy Float
-  tokenAccuracy Float
-  correctCharactersPerMinute Float
-  rawCharactersPerMinute Float
-  linesPerMinute Float
-  manualCharacterCount Int
-  autocompleteCharacterCount Int
+  id                          String          @id @default(cuid())
+  sessionId                   String
+  session                     PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  createdAt                   DateTime        @default(now())
+  typedCode                   String
+  completionPercentage        Float
+  characterAccuracy           Float
+  tokenAccuracy               Float
+  correctCharactersPerMinute  Float
+  rawCharactersPerMinute      Float
+  linesPerMinute              Float
+  manualCharacterCount        Int
+  autocompleteCharacterCount  Int
   autocompleteDependencyRatio Float
-  keystrokeCount Int
-  backspaceCount Int
-  pasteAttemptCount Int
-  errorCount Int
-  correctedErrorCount Int
-  averageRecoveryTimeMs Float
-  completed Boolean
-  @@index([sessionId,createdAt])
+  keystrokeCount              Int
+  backspaceCount              Int
+  pasteAttemptCount           Int
+  errorCount                  Int
+  correctedErrorCount         Int
+  averageRecoveryTimeMs       Float
+  completed                   Boolean
+
+  @@index([sessionId, createdAt])
 }
+
 model DailyMetric {
-  id String @id @default(cuid())
-  userId String
-  user UserProfile @relation(fields:[userId], references:[id])
-  date DateTime
-  activeDurationMs Int @default(0)
-  filesCompleted Int @default(0)
-  averageAccuracy Float @default(0)
-  averageCpm Float @default(0)
-  manualCodingRatio Float @default(0)
-  @@unique([userId,date])
-  @@index([userId,date])
+  id                String      @id @default(cuid())
+  userId            String
+  user              UserProfile @relation(fields: [userId], references: [id])
+  date              DateTime
+  activeDurationMs  Int         @default(0)
+  filesCompleted    Int         @default(0)
+  averageAccuracy   Float       @default(0)
+  averageCpm        Float       @default(0)
+  manualCodingRatio Float       @default(0)
+
+  @@unique([userId, date])
+  @@index([userId, date])
 }
+
 model Achievement {
-  id String @id
-  name String
+  id          String            @id
+  name        String
   description String
-  users UserAchievement[]
+  users       UserAchievement[]
 }
+
 model UserAchievement {
-  userId String
+  userId        String
   achievementId String
-  unlockedAt DateTime @default(now())
-  user UserProfile @relation(fields:[userId], references:[id])
-  achievement Achievement @relation(fields:[achievementId], references:[id])
-  @@id([userId,achievementId])
+  unlockedAt    DateTime    @default(now())
+  user          UserProfile @relation(fields: [userId], references: [id])
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+
+  @@id([userId, achievementId])
 }
+
 model PracticeGoal {
-  id String @id @default(cuid())
-  userId String
-  user UserProfile @relation(fields:[userId], references:[id])
-  date DateTime
+  id            String      @id @default(cuid())
+  userId        String
+  user          UserProfile @relation(fields: [userId], references: [id])
+  date          DateTime
   targetMinutes Int
-  completed Boolean @default(false)
-  @@unique([userId,date])
+  completed     Boolean     @default(false)
+
+  @@unique([userId, date])
 }
+
 model SavedDraft {
-  id String @id @default(cuid())
-  sessionId String @unique
-  session PracticeSession @relation(fields:[sessionId], references:[id], onDelete:Cascade)
+  id        String          @id @default(cuid())
+  sessionId String          @unique
+  session   PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   typedCode String
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime        @updatedAt
 }
+
 model Repetition {
-  userId String
-  fileId String
-  markedAt DateTime @default(now())
-  user UserProfile @relation(fields:[userId], references:[id])
-  file TrainingFile @relation(fields:[fileId], references:[id])
-  @@id([userId,fileId])
+  userId   String
+  fileId   String
+  markedAt DateTime     @default(now())
+  user     UserProfile  @relation(fields: [userId], references: [id])
+  file     TrainingFile @relation(fields: [fileId], references: [id])
+
+  @@id([userId, fileId])
+}
+
+model DraftDocument {
+  id              String          @id @default(cuid())
+  userId          String
+  fileId          String
+  latestRevision  Int             @default(0)
+  activeDeviceId  String?
+  activeSessionId String?
+  leaseExpiresAt  DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  user            UserProfile     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  file            TrainingFile    @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  revisions       DraftRevision[]
+
+  @@unique([userId, fileId])
+  @@index([userId, updatedAt])
+}
+
+model DraftRevision {
+  id              String           @id @default(cuid())
+  documentId      String
+  revision        Int
+  basedOnRevision Int?
+  deviceId        String?
+  sessionId       String?
+  typedCode       String
+  contentHash     String
+  createdAt       DateTime         @default(now())
+  document        DraftDocument    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  session         PracticeSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@unique([documentId, revision])
+  @@index([documentId, createdAt])
+}
+
+model ProfileRevision {
+  id            String   @id @default(cuid())
+  userId        String
+  version       Int
+  snapshot      Json
+  changedFields Json
+  deviceId      String?
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, version])
+}
+
+model SettingsRevision {
+  id            String   @id @default(cuid())
+  userId        String
+  version       Int
+  snapshot      Json
+  changedFields Json
+  deviceId      String?
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, version])
+}
+
+model UserBackup {
+  id                 String       @id @default(cuid())
+  userId             String
+  type               BackupType
+  status             BackupStatus @default(PENDING)
+  objectKey          String?
+  schemaVersion      Int
+  applicationVersion String?
+  checksum           String?
+  encryptedSize      Int?
+  createdAt          DateTime     @default(now())
+  completedAt        DateTime?
+  restoredAt         DateTime?
+  failureReason      String?
+  sourceUpdatedAt    DateTime?
+  user               User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model SecurityEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  type      String
+  metadata  Json?
+  deviceId  String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}
+
+model LegacyProgressClaim {
+  id              String   @id @default(cuid())
+  userId          String
+  legacyProfileId String   @unique
+  backupId        String?
+  claimedAt       DateTime @default(now())
+  summary         Json
+  user            User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+}
+
+model DiagnosticOccurrence {
+  id                String          @id @default(cuid())
+  userId            String
+  sessionId         String
+  fileId            String
+  fingerprint       String
+  source            String
+  code              String?
+  category          String
+  severity          String
+  message           String
+  startLine         Int
+  startColumn       Int
+  firstSeenAt       DateTime
+  lastSeenAt        DateTime
+  resolvedAt        DateTime?
+  recoveryTimeMs    Int?
+  reappearanceCount Int             @default(0)
+  transient         Boolean         @default(false)
+  user              UserProfile     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session           PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  file              TrainingFile    @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, fingerprint])
+  @@index([userId, sessionId])
 }

@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+enum SessionStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+enum ComparisonMode {
+  SYNTAX
+  STRICT
+}
+
+model UserProfile {
+  id String @id @default(cuid())
+  displayName String @default("Local Developer")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  settings UserSettings?
+  sessions PracticeSession[]
+  goals PracticeGoal[]
+  achievements UserAchievement[]
+  dailyMetrics DailyMetric[]
+  repeats Repetition[]
+}
+model UserSettings {
+  id String @id @default(cuid())
+  userId String @unique
+  user UserProfile @relation(fields:[userId], references:[id], onDelete:Cascade)
+  theme String @default("dark")
+  editorFontSize Int @default(14)
+  tabSize Int @default(4)
+  wordWrap Boolean @default(false)
+  minimapEnabled Boolean @default(false)
+  synchronizedScrolling Boolean @default(false)
+  pasteAllowed Boolean @default(false)
+  comparisonMode ComparisonMode @default(SYNTAX)
+  dailyGoalMinutes Int @default(30)
+  onboardingComplete Boolean @default(false)
+}
+model Language {
+  id String @id
+  name String
+  enabled Boolean @default(true)
+  comingSoon Boolean @default(false)
+  projects TrainingProject[]
+}
+model TrainingProject {
+  id String @id
+  slug String @unique
+  name String
+  description String
+  languageId String
+  language Language @relation(fields:[languageId], references:[id])
+  difficulty String
+  version String
+  order Int
+  enabled Boolean @default(true)
+  files TrainingFile[]
+  sessions PracticeSession[]
+}
+model TrainingFile {
+  id String @id
+  projectId String
+  project TrainingProject @relation(fields:[projectId], references:[id], onDelete:Cascade)
+  path String
+  fileName String
+  referenceCode String
+  difficulty String
+  estimatedMinutes Int
+  order Int
+  enabled Boolean @default(true)
+  contentHash String
+  topics TrainingFileTopic[]
+  sessions PracticeSession[]
+  repeats Repetition[]
+  @@unique([projectId,path])
+  @@index([projectId,order])
+}
+model Topic {
+  id String @id @default(cuid())
+  slug String @unique
+  name String
+  files TrainingFileTopic[]
+}
+model TrainingFileTopic {
+  fileId String
+  topicId String
+  file TrainingFile @relation(fields:[fileId], references:[id], onDelete:Cascade)
+  topic Topic @relation(fields:[topicId], references:[id], onDelete:Cascade)
+  @@id([fileId,topicId])
+}
+model PracticeSession {
+  id String @id @default(cuid())
+  userId String
+  projectId String
+  fileId String
+  user UserProfile @relation(fields:[userId], references:[id])
+  project TrainingProject @relation(fields:[projectId], references:[id])
+  file TrainingFile @relation(fields:[fileId], references:[id])
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+  activeDurationMs Int @default(0)
+  pausedDurationMs Int @default(0)
+  status SessionStatus @default(ACTIVE)
+  comparisonMode ComparisonMode @default(SYNTAX)
+  lastResumedAt DateTime @default(now())
+  attempts FileAttempt[]
+  draft SavedDraft?
+  @@index([userId,startedAt])
+  @@index([projectId,fileId])
+}
+model FileAttempt {
+  id String @id @default(cuid())
+  sessionId String
+  session PracticeSession @relation(fields:[sessionId], references:[id], onDelete:Cascade)
+  createdAt DateTime @default(now())
+  typedCode String
+  completionPercentage Float
+  characterAccuracy Float
+  tokenAccuracy Float
+  correctCharactersPerMinute Float
+  rawCharactersPerMinute Float
+  linesPerMinute Float
+  manualCharacterCount Int
+  autocompleteCharacterCount Int
+  autocompleteDependencyRatio Float
+  keystrokeCount Int
+  backspaceCount Int
+  pasteAttemptCount Int
+  errorCount Int
+  correctedErrorCount Int
+  averageRecoveryTimeMs Float
+  completed Boolean
+  @@index([sessionId,createdAt])
+}
+model DailyMetric {
+  id String @id @default(cuid())
+  userId String
+  user UserProfile @relation(fields:[userId], references:[id])
+  date DateTime
+  activeDurationMs Int @default(0)
+  filesCompleted Int @default(0)
+  averageAccuracy Float @default(0)
+  averageCpm Float @default(0)
+  manualCodingRatio Float @default(0)
+  @@unique([userId,date])
+  @@index([userId,date])
+}
+model Achievement {
+  id String @id
+  name String
+  description String
+  users UserAchievement[]
+}
+model UserAchievement {
+  userId String
+  achievementId String
+  unlockedAt DateTime @default(now())
+  user UserProfile @relation(fields:[userId], references:[id])
+  achievement Achievement @relation(fields:[achievementId], references:[id])
+  @@id([userId,achievementId])
+}
+model PracticeGoal {
+  id String @id @default(cuid())
+  userId String
+  user UserProfile @relation(fields:[userId], references:[id])
+  date DateTime
+  targetMinutes Int
+  completed Boolean @default(false)
+  @@unique([userId,date])
+}
+model SavedDraft {
+  id String @id @default(cuid())
+  sessionId String @unique
+  session PracticeSession @relation(fields:[sessionId], references:[id], onDelete:Cascade)
+  typedCode String
+  updatedAt DateTime @updatedAt
+}
+model Repetition {
+  userId String
+  fileId String
+  markedAt DateTime @default(now())
+  user UserProfile @relation(fields:[userId], references:[id])
+  file TrainingFile @relation(fields:[fileId], references:[id])
+  @@id([userId,fileId])
+}

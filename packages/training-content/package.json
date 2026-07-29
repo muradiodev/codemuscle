@@ -1,0 +1,7 @@
+{
+  "name":"@codemuscle/training-content","version":"1.0.0","type":"module",
+  "exports":{".":"./src/index.ts"},
+  "scripts":{"generate":"node scripts/generate-projects.mjs","typecheck":"tsc --noEmit","build":"tsc --noEmit","lint":"tsc --noEmit","test":"vitest run","validate":"tsx src/validate.ts","pretest":"node scripts/generate-projects.mjs","prevalidate":"node scripts/generate-projects.mjs"},
+  "dependencies":{"@codemuscle/shared":"workspace:*"},
+  "devDependencies":{"tsx":"^4.20.3","typescript":"^5.8.3","vitest":"^3.2.4"}
+}

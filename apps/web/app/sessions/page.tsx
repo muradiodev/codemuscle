@@ -1,0 +1,5 @@
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../../lib/api";
+type Session={id:string;startedAt:string;status:string;project:{name:string};file:{fileName:string};attempts:Array<{tokenAccuracy:number;correctCharactersPerMinute:number;completed:boolean}>};
+export default function Sessions(){const query=useQuery({queryKey:["recent-sessions"],queryFn:()=>api<Session[]>("/dashboard/recent-sessions")});return <main className="container"><h1 className="page-title">Session history</h1><p className="subtitle">Review completed and unfinished manual practice sessions.</p><div className="card list">{query.data?.length?query.data.map(session=>{const a=session.attempts.at(-1);return <div className="list-row" key={session.id}><div className="grow"><strong>{session.file.fileName}</strong><div className="muted">{session.project.name} · {new Date(session.startedAt).toLocaleString()}</div></div><span className="tag">{session.status.toLowerCase()}</span>{a&&<span>{a.tokenAccuracy.toFixed(1)}% · {a.correctCharactersPerMinute.toFixed(0)} CPM</span>}</div>}):<p className="muted">No practice sessions yet.</p>}</div></main>}

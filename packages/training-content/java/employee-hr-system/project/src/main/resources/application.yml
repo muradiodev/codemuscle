@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: employee-hr-system
+server:
+  port: 8080

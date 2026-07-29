@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: b2b-saas-platform
+server:
+  port: 8080

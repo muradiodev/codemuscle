@@ -1,0 +1,30 @@
+{
+  "name": "codemuscle",
+  "private": true,
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "phpstorm:install": "npx --yes pnpm@10.14.0 install",
+    "phpstorm:setup": "npm run db:start && npm run db:generate && npm run db:migrate && npm run db:seed",
+    "phpstorm:run": "npm run db:start && npm run dev",
+    "dev": "npx --yes pnpm@10.14.0 --parallel --filter @codemuscle/api --filter @codemuscle/web dev",
+    "dev:api": "npx --yes pnpm@10.14.0 --filter @codemuscle/api dev",
+    "dev:web": "npx --yes pnpm@10.14.0 --filter @codemuscle/web dev",
+    "build": "npx --yes pnpm@10.14.0 -r build",
+    "lint": "npx --yes pnpm@10.14.0 -r lint",
+    "typecheck": "npx --yes pnpm@10.14.0 -r typecheck",
+    "test": "npx --yes pnpm@10.14.0 -r test",
+    "test:e2e": "npx --yes playwright test",
+    "validate:training-projects": "npx --yes pnpm@10.14.0 --filter @codemuscle/training-content validate",
+    "db:start": "docker compose up -d postgres",
+    "db:stop": "docker compose stop postgres",
+    "db:generate": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api exec prisma generate",
+    "db:migrate": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api db:migrate",
+    "db:seed": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api db:seed",
+    "db:reset": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api db:reset"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "prettier": "^3.6.2",
+    "typescript": "^5.8.3"
+  }
+}

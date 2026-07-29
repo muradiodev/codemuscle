@@ -1,0 +1,232 @@
+{
+  "id": "employee-hr-system",
+  "name": "Employee HR Management System",
+  "language": "java",
+  "version": "1.0.0",
+  "description": "Practise Spring Boot HR workflows: workforce indexing, salary validation, leave, streams, and department statistics.",
+  "difficulty": "intermediate",
+  "order": 1,
+  "files": [
+    {
+      "path": "src/main/java/com/codemuscle/hr/HrApplication.java",
+      "difficulty": "warmup",
+      "order": 1,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-boot",
+        "dependency-injection"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/model/EmployeeStatus.java",
+      "difficulty": "warmup",
+      "order": 2,
+      "estimatedMinutes": 4,
+      "topics": [
+        "enums",
+        "domain-modeling"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/model/EmploymentType.java",
+      "difficulty": "warmup",
+      "order": 3,
+      "estimatedMinutes": 4,
+      "topics": [
+        "enums"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/model/Department.java",
+      "difficulty": "warmup",
+      "order": 4,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "immutability",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/model/Address.java",
+      "difficulty": "warmup",
+      "order": 5,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/model/Compensation.java",
+      "difficulty": "intermediate",
+      "order": 6,
+      "estimatedMinutes": 4,
+      "topics": [
+        "big-decimal",
+        "validation",
+        "records"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/model/Employee.java",
+      "difficulty": "intermediate",
+      "order": 7,
+      "estimatedMinutes": 8,
+      "topics": [
+        "lombok",
+        "collections",
+        "date-time",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/model/LeaveRequest.java",
+      "difficulty": "intermediate",
+      "order": 8,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "date-time",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/dto/EmployeeCreateRequest.java",
+      "difficulty": "warmup",
+      "order": 9,
+      "estimatedMinutes": 4,
+      "topics": [
+        "validation",
+        "records",
+        "spring-controller"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/dto/EmployeeResponse.java",
+      "difficulty": "warmup",
+      "order": 10,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping",
+        "records"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/repository/EmployeeRepository.java",
+      "difficulty": "warmup",
+      "order": 11,
+      "estimatedMinutes": 4,
+      "topics": [
+        "generics",
+        "optional",
+        "spring-repository"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/repository/InMemoryEmployeeRepository.java",
+      "difficulty": "advanced",
+      "order": 12,
+      "estimatedMinutes": 9,
+      "topics": [
+        "concurrency",
+        "collections",
+        "optional"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/repository/DepartmentRepository.java",
+      "difficulty": "warmup",
+      "order": 13,
+      "estimatedMinutes": 5,
+      "topics": [
+        "optional",
+        "collections"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/mapper/EmployeeMapper.java",
+      "difficulty": "intermediate",
+      "order": 14,
+      "estimatedMinutes": 9,
+      "topics": [
+        "mapping",
+        "lombok",
+        "date-time"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/exception/EmployeeNotFoundException.java",
+      "difficulty": "warmup",
+      "order": 15,
+      "estimatedMinutes": 4,
+      "topics": [
+        "exception-handling"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/exception/GlobalExceptionHandler.java",
+      "difficulty": "intermediate",
+      "order": 16,
+      "estimatedMinutes": 5,
+      "topics": [
+        "exception-handling",
+        "spring-controller"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/service/EmployeeService.java",
+      "difficulty": "warmup",
+      "order": 17,
+      "estimatedMinutes": 4,
+      "topics": [
+        "service-layer",
+        "generics"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/service/impl/EmployeeServiceImpl.java",
+      "difficulty": "advanced",
+      "order": 18,
+      "estimatedMinutes": 19,
+      "topics": [
+        "service-layer",
+        "streams",
+        "collections",
+        "transactions",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/controller/EmployeeController.java",
+      "difficulty": "intermediate",
+      "order": 19,
+      "estimatedMinutes": 11,
+      "topics": [
+        "spring-controller",
+        "validation",
+        "dependency-injection"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/util/EmployeeStatistics.java",
+      "difficulty": "advanced",
+      "order": 20,
+      "estimatedMinutes": 8,
+      "topics": [
+        "streams",
+        "collections",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/hr/config/HrConfiguration.java",
+      "difficulty": "warmup",
+      "order": 21,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-configuration"
+      ]
+    }
+  ]
+}

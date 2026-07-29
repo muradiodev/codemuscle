@@ -1,0 +1,209 @@
+{
+  "id": "energy-billing-system",
+  "name": "Energy Consumption and Billing System",
+  "language": "java",
+  "version": "1.0.0",
+  "description": "Practise meter ingestion, BigDecimal billing, tariff strategies, duplicate detection, and time-safe aggregation.",
+  "difficulty": "advanced",
+  "order": 3,
+  "files": [
+    {
+      "path": "src/main/java/com/codemuscle/energy/EnergyApplication.java",
+      "difficulty": "warmup",
+      "order": 1,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-boot"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/model/BillingStatus.java",
+      "difficulty": "warmup",
+      "order": 2,
+      "estimatedMinutes": 4,
+      "topics": [
+        "enums"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/model/GridArea.java",
+      "difficulty": "warmup",
+      "order": 3,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/model/Customer.java",
+      "difficulty": "warmup",
+      "order": 4,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/model/Meter.java",
+      "difficulty": "intermediate",
+      "order": 5,
+      "estimatedMinutes": 4,
+      "topics": [
+        "lombok"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/model/MeterReading.java",
+      "difficulty": "intermediate",
+      "order": 6,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "big-decimal",
+        "date-time"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/model/Tariff.java",
+      "difficulty": "intermediate",
+      "order": 7,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/model/Invoice.java",
+      "difficulty": "intermediate",
+      "order": 8,
+      "estimatedMinutes": 4,
+      "topics": [
+        "lombok",
+        "big-decimal",
+        "date-time"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/strategy/TariffCalculationStrategy.java",
+      "difficulty": "advanced",
+      "order": 9,
+      "estimatedMinutes": 4,
+      "topics": [
+        "strategy-pattern",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/repository/MeterReadingRepository.java",
+      "difficulty": "advanced",
+      "order": 10,
+      "estimatedMinutes": 7,
+      "topics": [
+        "collections",
+        "concurrency"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/repository/TariffRepository.java",
+      "difficulty": "warmup",
+      "order": 11,
+      "estimatedMinutes": 4,
+      "topics": [
+        "collections"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/service/BillingService.java",
+      "difficulty": "warmup",
+      "order": 12,
+      "estimatedMinutes": 4,
+      "topics": [
+        "service-layer"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/dto/ReadingIngestRequest.java",
+      "difficulty": "warmup",
+      "order": 13,
+      "estimatedMinutes": 4,
+      "topics": [
+        "validation",
+        "records"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/dto/InvoiceResponse.java",
+      "difficulty": "warmup",
+      "order": 14,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/service/impl/BillingServiceImpl.java",
+      "difficulty": "advanced",
+      "order": 15,
+      "estimatedMinutes": 14,
+      "topics": [
+        "service-layer",
+        "big-decimal",
+        "date-time",
+        "streams"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/mapper/BillingMapper.java",
+      "difficulty": "intermediate",
+      "order": 16,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping",
+        "mapstruct",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/controller/BillingController.java",
+      "difficulty": "intermediate",
+      "order": 17,
+      "estimatedMinutes": 11,
+      "topics": [
+        "spring-controller",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/exception/GlobalExceptionHandler.java",
+      "difficulty": "intermediate",
+      "order": 18,
+      "estimatedMinutes": 4,
+      "topics": [
+        "exception-handling"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/config/EnergyConfiguration.java",
+      "difficulty": "warmup",
+      "order": 19,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-configuration"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/energy/util/ConsumptionAggregator.java",
+      "difficulty": "advanced",
+      "order": 20,
+      "estimatedMinutes": 4,
+      "topics": [
+        "streams",
+        "big-decimal",
+        "date-time"
+      ]
+    }
+  ]
+}

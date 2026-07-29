@@ -1,0 +1,9 @@
+{
+  "name": "@codemuscle/shared",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {".":"./src/index.ts"},
+  "scripts": {"typecheck":"tsc --noEmit","build":"tsc --noEmit","lint":"tsc --noEmit","test":"vitest run --passWithNoTests"},
+  "dependencies": {"zod":"^3.25.76"},
+  "devDependencies": {"vitest":"^3.2.4","typescript":"^5.8.3"}
+}

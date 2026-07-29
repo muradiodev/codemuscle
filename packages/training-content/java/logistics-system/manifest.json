@@ -1,0 +1,199 @@
+{
+  "id": "logistics-system",
+  "name": "Logistics and Shipment Management System",
+  "language": "java",
+  "version": "1.0.0",
+  "description": "Practise shipment routing, capacity checks, tracking indexes, priority queues, and shipping-cost strategies.",
+  "difficulty": "intermediate",
+  "order": 2,
+  "files": [
+    {
+      "path": "src/main/java/com/codemuscle/logistics/LogisticsApplication.java",
+      "difficulty": "warmup",
+      "order": 1,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-boot"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/model/ShipmentStatus.java",
+      "difficulty": "warmup",
+      "order": 2,
+      "estimatedMinutes": 4,
+      "topics": [
+        "enums"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/model/DeliveryPriority.java",
+      "difficulty": "warmup",
+      "order": 3,
+      "estimatedMinutes": 4,
+      "topics": [
+        "enums"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/model/PackageItem.java",
+      "difficulty": "warmup",
+      "order": 4,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/model/Warehouse.java",
+      "difficulty": "intermediate",
+      "order": 5,
+      "estimatedMinutes": 5,
+      "topics": [
+        "lombok",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/model/TrackingEvent.java",
+      "difficulty": "warmup",
+      "order": 6,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "date-time"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/model/Shipment.java",
+      "difficulty": "advanced",
+      "order": 7,
+      "estimatedMinutes": 7,
+      "topics": [
+        "lombok",
+        "collections",
+        "date-time"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/dto/ShipmentCreateRequest.java",
+      "difficulty": "warmup",
+      "order": 8,
+      "estimatedMinutes": 4,
+      "topics": [
+        "validation",
+        "records"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/dto/ShipmentResponse.java",
+      "difficulty": "warmup",
+      "order": 9,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping",
+        "records"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/strategy/ShippingCostStrategy.java",
+      "difficulty": "advanced",
+      "order": 10,
+      "estimatedMinutes": 5,
+      "topics": [
+        "strategy-pattern",
+        "functional-interfaces",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/repository/ShipmentRepository.java",
+      "difficulty": "advanced",
+      "order": 11,
+      "estimatedMinutes": 7,
+      "topics": [
+        "concurrency",
+        "collections"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/repository/WarehouseRepository.java",
+      "difficulty": "intermediate",
+      "order": 12,
+      "estimatedMinutes": 6,
+      "topics": [
+        "collections"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/service/ShipmentService.java",
+      "difficulty": "warmup",
+      "order": 13,
+      "estimatedMinutes": 4,
+      "topics": [
+        "service-layer"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/service/impl/ShipmentServiceImpl.java",
+      "difficulty": "advanced",
+      "order": 14,
+      "estimatedMinutes": 15,
+      "topics": [
+        "service-layer",
+        "streams",
+        "concurrency",
+        "strategy-pattern"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/mapper/ShipmentMapper.java",
+      "difficulty": "intermediate",
+      "order": 15,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping",
+        "mapstruct"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/controller/ShipmentController.java",
+      "difficulty": "intermediate",
+      "order": 16,
+      "estimatedMinutes": 11,
+      "topics": [
+        "spring-controller",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/exception/GlobalExceptionHandler.java",
+      "difficulty": "intermediate",
+      "order": 17,
+      "estimatedMinutes": 4,
+      "topics": [
+        "exception-handling"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/config/LogisticsConfiguration.java",
+      "difficulty": "warmup",
+      "order": 18,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-configuration",
+        "strategy-pattern"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/logistics/util/ShipmentAggregator.java",
+      "difficulty": "advanced",
+      "order": 19,
+      "estimatedMinutes": 5,
+      "topics": [
+        "streams",
+        "collections"
+      ]
+    }
+  ]
+}

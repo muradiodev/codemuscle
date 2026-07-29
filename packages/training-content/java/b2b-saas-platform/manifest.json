@@ -1,0 +1,211 @@
+{
+  "id": "b2b-saas-platform",
+  "name": "Multi-Tenant B2B SaaS Platform",
+  "language": "java",
+  "version": "1.0.0",
+  "description": "Practise tenant isolation, subscriptions, feature flags, role permissions, and usage-limit enforcement.",
+  "difficulty": "advanced",
+  "order": 4,
+  "files": [
+    {
+      "path": "src/main/java/com/codemuscle/saas/SaasApplication.java",
+      "difficulty": "warmup",
+      "order": 1,
+      "estimatedMinutes": 4,
+      "topics": [
+        "spring-boot"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/model/TenantStatus.java",
+      "difficulty": "warmup",
+      "order": 2,
+      "estimatedMinutes": 4,
+      "topics": [
+        "enums"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/model/Role.java",
+      "difficulty": "warmup",
+      "order": 3,
+      "estimatedMinutes": 4,
+      "topics": [
+        "enums"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/model/Permission.java",
+      "difficulty": "warmup",
+      "order": 4,
+      "estimatedMinutes": 4,
+      "topics": [
+        "enums"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/model/Plan.java",
+      "difficulty": "intermediate",
+      "order": 5,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "big-decimal"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/model/Tenant.java",
+      "difficulty": "intermediate",
+      "order": 6,
+      "estimatedMinutes": 4,
+      "topics": [
+        "lombok",
+        "multi-tenancy"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/model/Subscription.java",
+      "difficulty": "intermediate",
+      "order": 7,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "date-time",
+        "optional"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/model/UsageRecord.java",
+      "difficulty": "intermediate",
+      "order": 8,
+      "estimatedMinutes": 4,
+      "topics": [
+        "records",
+        "date-time"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/tenant/TenantContext.java",
+      "difficulty": "advanced",
+      "order": 9,
+      "estimatedMinutes": 5,
+      "topics": [
+        "multi-tenancy",
+        "concurrency"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/dto/TenantCreateRequest.java",
+      "difficulty": "warmup",
+      "order": 10,
+      "estimatedMinutes": 4,
+      "topics": [
+        "validation",
+        "records"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/dto/TenantResponse.java",
+      "difficulty": "warmup",
+      "order": 11,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/repository/TenantRepository.java",
+      "difficulty": "advanced",
+      "order": 12,
+      "estimatedMinutes": 7,
+      "topics": [
+        "generics",
+        "multi-tenancy",
+        "collections"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/service/TenantFeatureService.java",
+      "difficulty": "advanced",
+      "order": 13,
+      "estimatedMinutes": 7,
+      "topics": [
+        "multi-tenancy",
+        "collections",
+        "service-layer"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/service/TenantService.java",
+      "difficulty": "warmup",
+      "order": 14,
+      "estimatedMinutes": 4,
+      "topics": [
+        "service-layer"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/service/impl/TenantServiceImpl.java",
+      "difficulty": "advanced",
+      "order": 15,
+      "estimatedMinutes": 22,
+      "topics": [
+        "service-layer",
+        "multi-tenancy",
+        "optional",
+        "streams"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/mapper/TenantMapper.java",
+      "difficulty": "intermediate",
+      "order": 16,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping",
+        "mapstruct",
+        "multi-tenancy"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/controller/TenantController.java",
+      "difficulty": "intermediate",
+      "order": 17,
+      "estimatedMinutes": 11,
+      "topics": [
+        "spring-controller",
+        "multi-tenancy",
+        "validation"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/exception/GlobalExceptionHandler.java",
+      "difficulty": "intermediate",
+      "order": 18,
+      "estimatedMinutes": 4,
+      "topics": [
+        "exception-handling"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/config/SaasConfiguration.java",
+      "difficulty": "intermediate",
+      "order": 19,
+      "estimatedMinutes": 5,
+      "topics": [
+        "spring-configuration",
+        "multi-tenancy"
+      ]
+    },
+    {
+      "path": "src/main/java/com/codemuscle/saas/util/UsageAggregator.java",
+      "difficulty": "advanced",
+      "order": 20,
+      "estimatedMinutes": 4,
+      "topics": [
+        "streams",
+        "multi-tenancy"
+      ]
+    }
+  ]
+}

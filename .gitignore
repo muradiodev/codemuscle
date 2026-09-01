@@ -5,6 +5,8 @@ coverage
 playwright-report
 test-results
 .env
+.env.deploy
+deployment-*.tar.gz
 *.log
 apps/api/prisma/dev.db
 .idea

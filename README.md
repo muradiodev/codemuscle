@@ -221,6 +221,44 @@ Monaco registers a deterministic Java completion provider (no LLM):
 
 Accepted completions are counted separately from manually typed characters.
 
+## Dev server deployment
+
+The browser-facing deployment runs on `DEVHUBPOINT01` (`89.117.60.47`). The management server is used only for the private Docker registry.
+
+| Component | Public URL | Dev host binding | Registry image |
+|---|---|---|---|
+| Web | `https://codemuscle.deviofy.com` | `127.0.0.1:3010` | `registry.hubpoint.ai/codemuscle/web:dev-latest` |
+| API | `https://apicodemuscle.deviofy.com` | `127.0.0.1:4010` | `registry.hubpoint.ai/codemuscle/api:dev-latest` |
+
+Deployment files:
+
+- `docker-compose.deploy.yml` runs the registry images on the dev server.
+- `infrastructure/codemuscle.deviofy.com.conf` proxies the public hostnames through nginx.
+- `.env.deploy` is a server-only, Git-ignored file containing `DEPLOY_DATABASE_URL`.
+
+The deployed project directory is `/var/www/html/devpractise2hands`. Build and publish images from that directory:
+
+```bash
+docker login registry.hubpoint.ai
+docker build -f infrastructure/api.Dockerfile \
+  -t registry.hubpoint.ai/codemuscle/api:dev-latest .
+docker build -f infrastructure/web.Dockerfile \
+  --build-arg NEXT_PUBLIC_API_URL=https://apicodemuscle.deviofy.com/api/v1 \
+  -t registry.hubpoint.ai/codemuscle/web:dev-latest .
+docker push registry.hubpoint.ai/codemuscle/api:dev-latest
+docker push registry.hubpoint.ai/codemuscle/web:dev-latest
+docker compose --env-file .env.deploy -f docker-compose.deploy.yml up -d
+```
+
+Verify the deployment:
+
+```bash
+docker compose --env-file .env.deploy -f docker-compose.deploy.yml ps
+curl https://apicodemuscle.deviofy.com/api/v1/health
+```
+
+The nginx hosts use Let's Encrypt TLS. Cloudflare records for both hostnames point to the dev server and may remain proxied using Full (strict) SSL mode.
+
 ## Troubleshooting
 
 | Symptom | Fix |

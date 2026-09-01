@@ -26,6 +26,7 @@ function cookieOptions(maxAge: number, httpOnly: boolean) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
+    ...(process.env.AUTH_COOKIE_DOMAIN ? { domain: process.env.AUTH_COOKIE_DOMAIN } : {}),
     maxAge
   };
 }

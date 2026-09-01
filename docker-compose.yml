@@ -15,7 +15,7 @@ services:
   api:
     build: {context: ., dockerfile: infrastructure/api.Dockerfile}
     environment:
-      DATABASE_URL: postgresql://codemuscle:codemuscle@postgres:5432/codemuscle
+      DATABASE_URL: ${DATABASE_URL}
       API_PORT: 4000
       WEB_ORIGIN: http://localhost:3000
     ports: ["4000:4000"]

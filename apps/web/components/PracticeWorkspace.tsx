@@ -9,6 +9,7 @@ import type { CalculatedMetrics, TreeNode, UserSettings } from "@codemuscle/shar
 import { api } from "../lib/api";
 import { compare } from "../lib/comparison";
 import { registerJavaCompletions } from "../lib/completions";
+import { registerPythonCompletions } from "../lib/pythonCompletions";
 import { pasteBlockFeedback } from "../lib/paste";
 import { getReferenceBlock } from "../lib/referenceBlock";
 import {
@@ -26,7 +27,7 @@ type FileData = {
   referenceCode: string;
   difficulty: string;
   estimatedMinutes: number;
-  project: { id: string; name: string };
+  project: { id: string; name: string; languageId: "java" | "python" };
   topics: Array<{ topic: { name: string } }>;
   sessions?: Array<{
     id: string;
@@ -91,7 +92,8 @@ export function PracticeWorkspace({
   fileProgress?: Record<string, FileProgress>;
 }) {
   const restored = file.sessions?.find(item => item.status === "ACTIVE" || item.status === "PAUSED");
-  const starterCode = javaPackageStarter(file.referenceCode);
+  const languageId = file.project.languageId;
+  const starterCode = languageId === "java" ? javaPackageStarter(file.referenceCode) : "";
   const router = useRouter();
   const [typed, setTyped] = useState(restored?.draft?.typedCode ?? starterCode);
   const [session, setSession] = useState<string | undefined>(restored?.id);
@@ -124,8 +126,8 @@ export function PracticeWorkspace({
   const running = Boolean(session) && !paused;
 
   const comparison = useMemo(
-    () => compare(typed, file.referenceCode, settings.comparisonMode),
-    [typed, file.referenceCode, settings.comparisonMode]
+    () => compare(typed, file.referenceCode, settings.comparisonMode, languageId),
+    [typed, file.referenceCode, settings.comparisonMode, languageId]
   );
 
   const typedLineCount = useMemo(() => typed.split(/\r?\n/).length, [typed]);
@@ -202,11 +204,10 @@ export function PracticeWorkspace({
   useEffect(() => {
     if (!monacoRef.current) return;
     completionsDisposable.current?.dispose();
-    completionsDisposable.current = registerJavaCompletions(
-      monacoRef.current,
-      file.referenceCode
-    );
-  }, [file.referenceCode]);
+    completionsDisposable.current = languageId === "python"
+      ? registerPythonCompletions(monacoRef.current, file.referenceCode)
+      : registerJavaCompletions(monacoRef.current, file.referenceCode);
+  }, [file.referenceCode, languageId]);
 
   useEffect(
     () => () => {
@@ -271,7 +272,9 @@ export function PracticeWorkspace({
     configureJavaEditorThemes(monaco);
     monaco.editor.setTheme(monacoTheme);
     completionsDisposable.current?.dispose();
-    completionsDisposable.current = registerJavaCompletions(monaco, file.referenceCode);
+    completionsDisposable.current = languageId === "python"
+      ? registerPythonCompletions(monaco, file.referenceCode)
+      : registerJavaCompletions(monaco, file.referenceCode);
     editor.onKeyDown(e => {
       counters.current.keys++;
       if (e.keyCode === monaco.KeyCode.Backspace) counters.current.backspaces++;
@@ -434,6 +437,7 @@ export function PracticeWorkspace({
           tree={tree}
           currentFile={file.id}
           projectId={file.project.id}
+          languageId={languageId}
           onFile={id => router.push(`/practice/${file.project.id}/${id}`)}
           onProject={id => router.push(`/projects/${id}`)}
           {...(fileProgress ? { fileProgress } : {})}
@@ -461,7 +465,7 @@ export function PracticeWorkspace({
               style={{ background: editorChrome.background }}
             >
               <Editor
-                language="java"
+                language={languageId}
                 beforeMount={configureJavaEditorThemes}
                 theme={monacoTheme}
                 value={typed}
@@ -519,7 +523,7 @@ export function PracticeWorkspace({
                 style={{ background: editorChrome.background }}
               >
                 <Editor
-                  language="java"
+                  language={languageId}
                   beforeMount={configureJavaEditorThemes}
                   theme={monacoTheme}
                   value={referenceValue}

@@ -15,7 +15,7 @@ type PracticeFile = {
   referenceCode: string;
   difficulty: string;
   estimatedMinutes: number;
-  project: { id: string; name: string };
+  project: { id: string; name: string; languageId: "java" | "python" };
   topics: Array<{ topic: { name: string } }>;
   sessions?: Array<{
     id: string;

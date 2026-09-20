@@ -19,8 +19,8 @@ const achievements = [
 await prisma.language.upsert({ where: { id: "java" }, update: {}, create: { id: "java", name: "Java", enabled: true } });
 await prisma.language.upsert({
   where: { id: "python" },
-  update: { comingSoon: true, enabled: false },
-  create: { id: "python", name: "Python", enabled: false, comingSoon: true }
+  update: { comingSoon: false, enabled: true },
+  create: { id: "python", name: "Python", enabled: true, comingSoon: false }
 });
 const user = await prisma.userProfile.upsert({
   where: { id: "local-user" },
@@ -44,14 +44,15 @@ for (const project of trainingProjects) {
       description: project.description,
       version: project.version,
       difficulty: project.difficulty,
-      order: project.order
+      order: project.order,
+      languageId: project.languageId
     },
     create: {
       id: project.id,
       slug: project.slug,
       name: project.name,
       description: project.description,
-      languageId: "java",
+      languageId: project.languageId,
       difficulty: project.difficulty,
       version: project.version,
       order: project.order

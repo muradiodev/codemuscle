@@ -1,5 +1,5 @@
 import { describe,expect,it } from "vitest";
-import { calculateMetrics, compareCode, tokenizeJava } from "../src/services/comparison.js";
+import { calculateMetrics, compareCode, tokenizeJava, tokenizePython } from "../src/services/comparison.js";
 import { recommend } from "../src/services/recommendations.js";
 import { buildTree } from "../src/services/tree.js";
 import { calculateStreak } from "../src/services/streak.js";
@@ -8,6 +8,7 @@ describe("comparison and metrics",()=>{
   it("ignores formatting in syntax mode",()=>expect(compareCode("class A{ }","class A {\n}","syntax").tokenAccuracy).toBe(100));
   it("detects incorrect identifiers",()=>expect(compareCode("int count;","int total;","syntax").tokenAccuracy).toBeLessThan(100));
   it("tokenizes annotations and generics",()=>expect(tokenizeJava("@Valid List<String> x;")).toEqual(["@","Valid","List","<","String",">","x",";"]));
+  it("tokenizes Python syntax and ignores comments",()=>expect(tokenizePython("total := value ** 2 # note")).toEqual(["total",":=","value","**","2"]));
   it("calculates documented ratios",()=>{
     const result=calculateMetrics({typedCode:"abc",activeDurationMs:60000,manualCharacterCount:3,autocompleteCharacterCount:1,keystrokeCount:3,backspaceCount:0,pasteAttemptCount:0,errorCount:0,correctedErrorCount:0,recoveryTimesMs:[1000,3000]},"abc","strict");
     expect(result.correctCharactersPerMinute).toBe(3);expect(result.manualCodingRatio).toBe(75);expect(result.averageRecoveryTimeMs).toBe(2000);

@@ -1,0 +1,229 @@
+{
+  "id": "python-b2b-saas-platform",
+  "name": "Multi-Tenant B2B SaaS Platform (Python)",
+  "language": "python",
+  "version": "1.0.0",
+  "description": "FastAPI multi-tenant SaaS with plans, subscriptions, feature entitlements, tenant context, usage aggregation, and JWT authentication.",
+  "difficulty": "advanced",
+  "order": 104,
+  "files": [
+    {
+      "path": "app/main.py",
+      "difficulty": "warmup",
+      "order": 1,
+      "estimatedMinutes": 4,
+      "topics": [
+        "fastapi",
+        "application-factory",
+        "routing"
+      ]
+    },
+    {
+      "path": "app/config.py",
+      "difficulty": "warmup",
+      "order": 2,
+      "estimatedMinutes": 4,
+      "topics": [
+        "pydantic-settings",
+        "configuration",
+        "environment"
+      ]
+    },
+    {
+      "path": "app/exceptions.py",
+      "difficulty": "intermediate",
+      "order": 3,
+      "estimatedMinutes": 6,
+      "topics": [
+        "fastapi",
+        "exception-handling",
+        "http"
+      ]
+    },
+    {
+      "path": "app/security/models.py",
+      "difficulty": "intermediate",
+      "order": 4,
+      "estimatedMinutes": 4,
+      "topics": [
+        "dataclasses",
+        "security",
+        "immutability"
+      ]
+    },
+    {
+      "path": "app/security/schemas.py",
+      "difficulty": "warmup",
+      "order": 5,
+      "estimatedMinutes": 6,
+      "topics": [
+        "pydantic",
+        "validation",
+        "authentication"
+      ]
+    },
+    {
+      "path": "app/security/repository.py",
+      "difficulty": "intermediate",
+      "order": 6,
+      "estimatedMinutes": 4,
+      "topics": [
+        "repository-pattern",
+        "thread-safety",
+        "collections"
+      ]
+    },
+    {
+      "path": "app/security/passwords.py",
+      "difficulty": "advanced",
+      "order": 7,
+      "estimatedMinutes": 5,
+      "topics": [
+        "security",
+        "password-hashing",
+        "scrypt"
+      ]
+    },
+    {
+      "path": "app/security/service.py",
+      "difficulty": "advanced",
+      "order": 8,
+      "estimatedMinutes": 12,
+      "topics": [
+        "jwt",
+        "authentication",
+        "services"
+      ]
+    },
+    {
+      "path": "app/security/container.py",
+      "difficulty": "warmup",
+      "order": 9,
+      "estimatedMinutes": 4,
+      "topics": [
+        "dependency-injection",
+        "composition-root"
+      ]
+    },
+    {
+      "path": "app/security/dependencies.py",
+      "difficulty": "advanced",
+      "order": 10,
+      "estimatedMinutes": 6,
+      "topics": [
+        "fastapi",
+        "oauth2",
+        "dependency-injection"
+      ]
+    },
+    {
+      "path": "app/security/router.py",
+      "difficulty": "intermediate",
+      "order": 11,
+      "estimatedMinutes": 5,
+      "topics": [
+        "fastapi",
+        "routing",
+        "authentication"
+      ]
+    },
+    {
+      "path": "app/saas/models.py",
+      "difficulty": "intermediate",
+      "order": 12,
+      "estimatedMinutes": 11,
+      "topics": [
+        "dataclasses",
+        "enums",
+        "domain-modeling"
+      ]
+    },
+    {
+      "path": "app/saas/context.py",
+      "difficulty": "advanced",
+      "order": 13,
+      "estimatedMinutes": 5,
+      "topics": [
+        "contextvars",
+        "multi-tenancy",
+        "request-context"
+      ]
+    },
+    {
+      "path": "app/saas/schemas.py",
+      "difficulty": "warmup",
+      "order": 14,
+      "estimatedMinutes": 5,
+      "topics": [
+        "pydantic",
+        "validation",
+        "dto"
+      ]
+    },
+    {
+      "path": "app/saas/repositories.py",
+      "difficulty": "intermediate",
+      "order": 15,
+      "estimatedMinutes": 8,
+      "topics": [
+        "repository-pattern",
+        "multi-tenancy",
+        "collections"
+      ]
+    },
+    {
+      "path": "app/saas/features.py",
+      "difficulty": "advanced",
+      "order": 16,
+      "estimatedMinutes": 4,
+      "topics": [
+        "feature-flags",
+        "services",
+        "business-rules"
+      ]
+    },
+    {
+      "path": "app/saas/mappers.py",
+      "difficulty": "warmup",
+      "order": 17,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping",
+        "dto"
+      ]
+    },
+    {
+      "path": "app/saas/services.py",
+      "difficulty": "advanced",
+      "order": 18,
+      "estimatedMinutes": 9,
+      "topics": [
+        "services",
+        "multi-tenancy",
+        "dependency-injection"
+      ]
+    },
+    {
+      "path": "app/saas/analytics.py",
+      "difficulty": "intermediate",
+      "order": 19,
+      "estimatedMinutes": 4,
+      "topics": [
+        "aggregation",
+        "multi-tenancy",
+        "collections"
+      ]
+    },
+    {
+      "path": "app/saas/router.py",
+      "difficulty": "advanced",
+      "order": 20,
+      "estimatedMinutes": 8,
+      "topics": [
+        "fastapi",
+        "rest",
+        "multi-tenancy"
+      ]
+    }
+  ]
+}

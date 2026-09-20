@@ -1,0 +1,21 @@
+Host hub-mgmt
+  HostName 5.189.191.21
+  User root
+  IdentityFile REPLACE_WITH_REPO/deploy/secrets/mgmt_key
+  IdentitiesOnly yes
+  StrictHostKeyChecking accept-new
+
+Host hub-dev
+  HostName 89.117.60.47
+  User web_deploy
+  IdentityFile REPLACE_WITH_REPO/deploy/secrets/dev_key
+  IdentitiesOnly yes
+  ProxyJump hub-mgmt
+  StrictHostKeyChecking accept-new
+
+Host hub-prod
+  HostName 144.91.114.194
+  User web_deploy
+  IdentityFile REPLACE_WITH_REPO/deploy/secrets/prod_key
+  IdentitiesOnly yes
+  StrictHostKeyChecking accept-new

@@ -20,5 +20,5 @@ export async function api<T>(path:string,init?:RequestInit):Promise<T>{
   }
   return response.status===204?undefined as T:response.json() as Promise<T>;
 }
-export const projectSchema=z.object({id:z.string(),name:z.string(),description:z.string(),difficulty:z.string(),fileCount:z.number(),completedFiles:z.number(),nextFileId:z.string().nullable()});
+export const projectSchema=z.object({id:z.string(),name:z.string(),description:z.string(),languageId:z.enum(["java","python"]),difficulty:z.string(),fileCount:z.number(),completedFiles:z.number(),nextFileId:z.string().nullable()});
 export type ProjectSummary=z.infer<typeof projectSchema>;

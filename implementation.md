@@ -76,7 +76,7 @@ flowchart LR
 1. **Local profile first** — one seeded user (`local-user`); schema is ready for future authentication.
 2. **Browser-side comparison** — keystroke feedback stays local for latency; finish metrics are recalculated on the server.
 3. **No AI services** — code never leaves the local stack for generation or review.
-4. **Language-neutral contracts** — `LanguageDefinition` exists in shared types; only Java content is implemented.
+4. **Language-neutral contracts** — `LanguageDefinition` supports the active Java and Python catalogs.
 5. **Versioned training content** — Java sources live on disk under manifests; seed upserts by stable IDs and content hashes.
 
 ---
@@ -110,7 +110,7 @@ Implemented at `/onboarding`. On first visit (when `onboardingComplete` is false
 - Tab size
 - Synchronized scrolling (on/off)
 - Allow paste for accessibility (off by default)
-- Language: **Java** active; **Python — Coming soon** (disabled)
+- Languages: **Java** and **Python** active
 - Initial practice project (all four Java projects)
 
 ### Behaviour
@@ -133,7 +133,7 @@ Implemented at `/onboarding`. On first visit (when `onboardingComplete` is false
 | Recommended practice queue | Top ranked files with reasons |
 | Recent achievements | Latest unlocked achievements |
 | Project progress cards | Completion counts per project |
-| Python card | Visible “Coming soon” state |
+| Python projects | Four FastAPI projects available from the dashboard |
 
 ---
 
@@ -145,7 +145,7 @@ Primary screen: `/practice/[projectId]/[fileId]`.
 
 | Feature | Status |
 |---|---|
-| Language selector | Java active; Python disabled “Coming soon” |
+| Language selector | Java and Python active |
 | Project selector | Instant switch between the four projects |
 | Search files | Filters the tree |
 | Expand all / Collapse all | Folder controls |
@@ -403,7 +403,7 @@ Mark / unmark repetition:
 | Language | State |
 |---|---|
 | Java | Active — full content |
-| Python | Disabled — **Coming soon** |
+| Python | Enabled — four Python 3.12 / FastAPI projects |
 
 Shared type `LanguageDefinition` supports future languages (extensions, Monaco id, completion catalog, comparison strategy).
 
@@ -617,7 +617,7 @@ Compiles every project with `maven:3.9.11-eclipse-temurin-21` via Docker.
 | Reference block reveal | Block slicing |
 | Theme resolution | Dark/light/system |
 | Explorer | Expand/collapse, file select, project switch |
-| Training catalog | 4 projects, ≥15 files each, unique packages |
+| Training catalog | 8 projects, ≥15 files each, Java and Python coverage |
 
 ### End-to-end (Playwright)
 
@@ -625,13 +625,17 @@ Compiles every project with `maven:3.9.11-eclipse-temurin-21` via Docker.
 |---|---|
 | Complete onboarding | Yes |
 | Land in HR Java practice | Yes |
-| See Python coming soon option | Yes |
+| Select Python and open a FastAPI practice project | Yes |
 | Type into editor and see live metrics UI | Yes |
-| Project catalog lists all four projects | Yes |
+| Project catalog lists all eight projects | Yes |
 
 ### Java content
 
 All four reference projects compile under Maven in CI / `validate:training-projects`.
+
+### Python content
+
+All four FastAPI reference projects pass Python 3.12 syntax validation and include focused pytest domain tests.
 
 ---
 
@@ -702,8 +706,9 @@ Web and API both consume these contracts to avoid duplicated types.
 - [x] Project catalog and project detail  
 - [x] Three-pane practice workspace  
 - [x] Explorer with search, expand/collapse, resize, hide  
-- [x] Java active / Python coming soon  
+- [x] Java and Python active
 - [x] Four complete Java Spring Boot projects (112 practice files)  
+- [x] Four complete Python FastAPI projects (77 practice files)
 - [x] Paste blocked by default + accessibility override  
 - [x] Deterministic completions (System/collections/annotations/generics/reference symbols)  
 - [x] Syntax and strict comparison modes  
@@ -750,7 +755,6 @@ These exist partially, are schema-ready, or were intentionally deferred for the 
 | Tailwind / ESLint shared package | Custom CSS; lint via TypeScript |
 | Swagger UI | OpenAPI JSON served; interactive UI not mounted |
 | Deep e2e coverage | Smoke tests only (not full pause/finish/persist journey) |
-| Python content | Selector only — no training files |
 
 ---
 

@@ -6,7 +6,7 @@ import type { TrainingFile, TrainingProject } from "@codemuscle/shared";
 import { difficulties } from "@codemuscle/shared";
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const javaRoot = join(packageRoot, "java");
+const languageRoots = ["java", "python"] as const;
 
 type ManifestFile = {
   path: string;
@@ -30,18 +30,23 @@ type Manifest = {
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
 
 function loadProjects(): TrainingProject[] {
-  if (!existsSync(javaRoot)) {
-    throw new Error(`Training content missing at ${javaRoot}. Run: node scripts/generate-projects.mjs`);
-  }
-  const slugs = readdirSync(javaRoot, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort();
+  const projectLocations = languageRoots.flatMap((language) => {
+    const root = join(packageRoot, language);
+    if (!existsSync(root)) {
+      throw new Error(`Training content missing at ${root}. Run: pnpm generate`);
+    }
+    return readdirSync(root, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => ({ language, root, slug: entry.name }));
+  });
 
-  return slugs.map((slug) => {
-    const manifestPath = join(javaRoot, slug, "manifest.json");
+  return projectLocations.map(({ language, root, slug }) => {
+    const manifestPath = join(root, slug, "manifest.json");
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Manifest;
-    const projectDir = join(javaRoot, slug, "project");
+    if (manifest.language !== language) {
+      throw new Error(`${manifestPath} declares ${manifest.language}; expected ${language}`);
+    }
+    const projectDir = join(root, slug, "project");
     const files: TrainingFile[] = manifest.files.map((entry, index) => {
       const referenceCode = readFileSync(join(projectDir, entry.path), "utf8").replace(/\r\n/g, "\n");
       const fileName = entry.path.split("/").at(-1)!;
@@ -50,7 +55,7 @@ function loadProjects(): TrainingProject[] {
         projectId: manifest.id,
         path: entry.path,
         fileName,
-        language: "java",
+        language,
         difficulty: entry.difficulty ?? "intermediate",
         order: entry.order ?? index + 1,
         estimatedMinutes: entry.estimatedMinutes ?? Math.max(4, Math.ceil(referenceCode.split("\n").length / 6)),
@@ -66,7 +71,7 @@ function loadProjects(): TrainingProject[] {
       name: manifest.name,
       description: manifest.description,
       difficulty: manifest.difficulty,
-      languageId: "java",
+      languageId: language,
       version: manifest.version,
       order: manifest.order,
       files
@@ -81,6 +86,10 @@ export function projectById(id: string) {
 export function fileById(id: string) {
   return trainingProjects.flatMap((project) => project.files).find((file) => file.id === id);
 }
-export function projectSourceRoot(slug: string) {
-  return join(javaRoot, slug, "project");
+export function projectSourceRoot(slug: string, languageId?: string) {
+  const language = languageId ?? projectById(slug)?.languageId;
+  if (!languageRoots.includes(language as (typeof languageRoots)[number])) {
+    throw new Error(`Unknown language for project ${slug}`);
+  }
+  return join(packageRoot, language!, slug, "project");
 }

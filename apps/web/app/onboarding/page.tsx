@@ -7,10 +7,14 @@ import type { UserSettings } from "@codemuscle/shared";
 import { api } from "../../lib/api";
 
 const PROJECTS = [
-  { id: "employee-hr-system", name: "Employee HR Management System" },
-  { id: "logistics-system", name: "Logistics and Shipment Management System" },
-  { id: "energy-billing-system", name: "Energy Consumption and Billing System" },
-  { id: "b2b-saas-platform", name: "Multi-Tenant B2B SaaS Platform" }
+  { id: "employee-hr-system", name: "Employee HR Management System", languageId: "java" },
+  { id: "logistics-system", name: "Logistics and Shipment Management System", languageId: "java" },
+  { id: "energy-billing-system", name: "Energy Consumption and Billing System", languageId: "java" },
+  { id: "b2b-saas-platform", name: "Multi-Tenant B2B SaaS Platform", languageId: "java" },
+  { id: "python-employee-hr-system", name: "Employee HR Management System", languageId: "python" },
+  { id: "python-logistics-system", name: "Logistics and Shipment Management System", languageId: "python" },
+  { id: "python-energy-billing-system", name: "Energy Consumption and Billing System", languageId: "python" },
+  { id: "python-b2b-saas-platform", name: "Multi-Tenant B2B SaaS Platform", languageId: "python" }
 ] as const;
 
 export default function Onboarding() {
@@ -22,6 +26,7 @@ export default function Onboarding() {
   const [tab, setTab] = useState(4);
   const [syncScrolling, setSyncScrolling] = useState(false);
   const [pasteAllowed, setPasteAllowed] = useState(false);
+  const [languageId, setLanguageId] = useState<"java" | "python">("java");
   const [projectId, setProjectId] = useState<string>(PROJECTS[0].id);
   const [saving, setSaving] = useState(false);
 
@@ -108,11 +113,18 @@ export default function Onboarding() {
         </label>
         <label className="field">
           Language
-          <select value="java" aria-label="Language">
+          <select
+            value={languageId}
+            aria-label="Language"
+            onChange={event => {
+              const language = event.target.value as "java" | "python";
+              setLanguageId(language);
+              const firstProject = PROJECTS.find(project => project.languageId === language);
+              if (firstProject) setProjectId(firstProject.id);
+            }}
+          >
             <option value="java">Java</option>
-            <option value="python" disabled>
-              Python — Coming soon
-            </option>
+            <option value="python">Python</option>
           </select>
         </label>
         <label className="field">
@@ -122,7 +134,7 @@ export default function Onboarding() {
             value={projectId}
             onChange={e => setProjectId(e.target.value)}
           >
-            {PROJECTS.map(project => (
+            {PROJECTS.filter(project => project.languageId === languageId).map(project => (
               <option key={project.id} value={project.id}>
                 {project.name}
               </option>

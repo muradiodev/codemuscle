@@ -2,11 +2,11 @@
 
 > Release documentation update: CodeMuscle now includes registered accounts, secure server-side sessions, synchronized PostgreSQL progress, immutable multi-device draft revisions, editing leases, device management, profile/settings history, and encrypted user backups. Java language-server diagnostics are still under development and are not claimed as available in this document.
 
-CodeMuscle is a desktop-first manual coding practice platform for experienced engineers. It presents professional reference code beside an editable IDE-style editor, compares the typed implementation in real time, provides deterministic IntelliJ-style completion, and measures whether syntax fluency is improving — without sending code to AI services.
+CodeMuscle is a desktop-first manual coding practice platform for experienced engineers. It presents professional reference code beside an editable IDE-style editor, compares the typed implementation in real time, provides deterministic language-aware completion, and measures whether syntax fluency is improving — without sending code to AI services.
 
-This is **not** a LeetCode, quiz, or tutorial product. The practice loop is deliberate transcription of realistic Spring Boot code to rebuild muscle memory after heavy AI-tool reliance.
+This is **not** a LeetCode, quiz, or tutorial product. The practice loop is deliberate transcription of realistic Spring Boot and FastAPI code to rebuild muscle memory after heavy AI-tool reliance.
 
-The initial catalog contains **four distinct Java 21 / Spring Boot 3.3** projects (**112** practice files). Python appears in the language selector as **Coming soon**.
+The catalog contains four Java 21 / Spring Boot 3.3 projects and four equivalent Python 3.12 / FastAPI projects. Both languages are available in onboarding and the practice explorer.
 
 ## Screenshots
 
@@ -27,7 +27,7 @@ flowchart LR
   A --> K[Encrypted backup storage]
   A --> C[Versioned training catalog]
   B --> M[Monaco + local comparison]
-  C --> V[Maven compile validation]
+  C --> V[Maven and Python validation]
 ```
 
 The browser handles keystroke-level comparison and batches autosaves. Express owns authentication, authorization, session lifecycle, immutable draft revisions, metrics, recommendations, achievements, account history, and backups. Passwords use Argon2id. Raw opaque session tokens are sent only through `HttpOnly` cookies; PostgreSQL stores only their SHA-256 hashes.
@@ -40,7 +40,7 @@ The additive account migration preserves the existing legacy profile. When `ALLO
 |---|---|
 | Web | Next.js App Router, React, TypeScript, Monaco, TanStack Query, Zod, Recharts |
 | API | Node.js, Express, Prisma, PostgreSQL, Zod, Pino, Helmet, Argon2id, Socket.IO |
-| Content | On-disk Java Spring Boot projects + manifest loader |
+| Content | On-disk Java Spring Boot and Python FastAPI projects + manifest loader |
 | Tooling | pnpm workspaces, Docker Compose, Vitest, Playwright, GitHub Actions |
 
 ## Repository structure
@@ -49,7 +49,7 @@ The additive account migration preserves the existing legacy profile. When `ALLO
 apps/web                      Next.js UI and Monaco practice workspace
 apps/api                      Express API, Prisma, services, OpenAPI
 packages/shared               Zod contracts and shared domain types
-packages/training-content     Four Java projects under java/*/project
+packages/training-content     Java and Python projects under <language>/*/project
 packages/typescript-config    Shared strict TypeScript baseline
 infrastructure                API/web Dockerfiles
 e2e                           Playwright journeys
@@ -137,7 +137,7 @@ pnpm db:seed
 pnpm db:reset
 ```
 
-`pnpm validate:training-projects` compiles each on-disk reference project with `maven:3.9.11-eclipse-temurin-21` via Docker.
+`pnpm validate:training-projects` compiles and tests each Java reference project with `maven:3.9.11-eclipse-temurin-21` via Docker, then syntax-checks and tests each Python project with Python 3.12 and pytest.
 
 ## Training projects
 
@@ -148,10 +148,21 @@ pnpm db:reset
 | Energy Consumption and Billing System | `com.codemuscle.energy` | 28 |
 | Multi-Tenant B2B SaaS Platform | `com.codemuscle.saas` | 28 |
 
+The same four domains are available as Python 3.12 / FastAPI applications with 19–20 practice files each. They include Pydantic validation, in-memory repositories, service layers, API routers, JWT authentication, and domain tests.
+
 Content lives under `packages/training-content/java/<slug>/` with `manifest.json` + `project/` sources. Regenerate with:
 
 ```bash
 pnpm --filter @codemuscle/training-content generate
+```
+
+Python content lives under `packages/training-content/python/<slug>/` with the same manifest layout. Each generated project can be run independently:
+
+```bash
+cd packages/training-content/python/python-employee-hr-system/project
+python -m pip install -e ".[test]"
+uvicorn app.main:app --reload
+pytest
 ```
 
 ### Adding a new Java training project
@@ -163,7 +174,7 @@ pnpm --filter @codemuscle/training-content generate
 
 ### Adding another language later
 
-Implement a `LanguageDefinition` in `@codemuscle/shared` (extensions, Monaco id, completion catalog, comparison strategy). Add content under `packages/training-content/<language>/`, enable the language row, and register a Monaco completion provider. Python is already seeded as disabled / Coming soon.
+Implement a `LanguageDefinition` in `@codemuscle/shared` (extensions, Monaco id, completion catalog, comparison strategy). Add content under `packages/training-content/<language>/`, enable the language row, and register a Monaco completion provider.
 
 ## Accounts and synchronization
 
@@ -211,7 +222,7 @@ Default comparison mode is **syntax** (whitespace-tolerant token compare). **Str
 
 ## Completion-provider architecture
 
-Monaco registers a deterministic Java completion provider (no LLM):
+Monaco registers deterministic Java and Python completion providers (no LLM). Python suggestions combine language keywords, built-ins, and symbols extracted from the current reference file. Java completion includes:
 
 1. Java keywords and common JDK types  
 2. Spring / Lombok annotations (`@` trigger)  
@@ -221,43 +232,20 @@ Monaco registers a deterministic Java completion provider (no LLM):
 
 Accepted completions are counted separately from manually typed characters.
 
-## Dev server deployment
+## Live / production deployment
 
-The browser-facing deployment runs on `DEVHUBPOINT01` (`89.117.60.47`). The management server is used only for the private Docker registry.
+The public site runs on `DEVHUBPOINT01`. Repeatable operator steps, including gitignored keys, live in [`deploy/README.md`](deploy/README.md).
 
-| Component | Public URL | Dev host binding | Registry image |
+```powershell
+npm run deploy:live
+```
+
+| Component | Public URL | Host binding | Registry image |
 |---|---|---|---|
 | Web | `https://codemuscle.deviofy.com` | `127.0.0.1:3010` | `registry.hubpoint.ai/codemuscle/web:dev-latest` |
 | API | `https://apicodemuscle.deviofy.com` | `127.0.0.1:4010` | `registry.hubpoint.ai/codemuscle/api:dev-latest` |
 
-Deployment files:
-
-- `docker-compose.deploy.yml` runs the registry images on the dev server.
-- `infrastructure/codemuscle.deviofy.com.conf` proxies the public hostnames through nginx.
-- `.env.deploy` is a server-only, Git-ignored file containing `DEPLOY_DATABASE_URL`.
-
-The deployed project directory is `/var/www/html/devpractise2hands`. Build and publish images from that directory:
-
-```bash
-docker login registry.hubpoint.ai
-docker build -f infrastructure/api.Dockerfile \
-  -t registry.hubpoint.ai/codemuscle/api:dev-latest .
-docker build -f infrastructure/web.Dockerfile \
-  --build-arg NEXT_PUBLIC_API_URL=https://apicodemuscle.deviofy.com/api/v1 \
-  -t registry.hubpoint.ai/codemuscle/web:dev-latest .
-docker push registry.hubpoint.ai/codemuscle/api:dev-latest
-docker push registry.hubpoint.ai/codemuscle/web:dev-latest
-docker compose --env-file .env.deploy -f docker-compose.deploy.yml up -d
-```
-
-Verify the deployment:
-
-```bash
-docker compose --env-file .env.deploy -f docker-compose.deploy.yml ps
-curl https://apicodemuscle.deviofy.com/api/v1/health
-```
-
-The nginx hosts use Let's Encrypt TLS. Cloudflare records for both hostnames point to the dev server and may remain proxied using Full (strict) SSL mode.
+Secrets stay in `deploy/secrets/` (gitignored). Do not commit `.env`, `.env.deploy`, SSH keys, or the Hubpoint operations runbook.
 
 ## Troubleshooting
 

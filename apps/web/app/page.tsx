@@ -154,10 +154,6 @@ export default function Dashboard() {
             </div>
           </Link>
         ))}
-        <div className="card coming-soon">
-          <strong>Python</strong>
-          <p className="muted">Coming soon</p>
-        </div>
       </div>
     </main>
   );

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compare, tokenize, tokenizeJava } from "../lib/comparison";
+import { compare, tokenize, tokenizeJava, tokenizePython } from "../lib/comparison";
 
 describe("browser comparison", () => {
   it("ignores whitespace in syntax mode", () =>
@@ -23,4 +23,11 @@ describe("browser comparison", () => {
 
   it("keeps ++ and -- as tokens", () =>
     expect(tokenize("i++ + j--")).toEqual(["i", "++", "+", "j", "--"]));
+
+  it("supports Python comments and operators", () => {
+    expect(tokenizePython("value := amount ** 2  # calculate")).toEqual([
+      "value", ":=", "amount", "**", "2"
+    ]);
+    expect(compare("def run():\n return True", "def run():\n    return True", "syntax", "python").tokenAccuracy).toBe(100);
+  });
 });

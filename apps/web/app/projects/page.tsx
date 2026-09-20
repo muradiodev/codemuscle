@@ -6,12 +6,12 @@ import { api,type ProjectSummary } from "../../lib/api";
 export default function Projects(){
   const query=useQuery({queryKey:["projects"],queryFn:()=>api<ProjectSummary[]>("/projects")});
   return <main className="container">
-    <h1 className="page-title">Java practice projects</h1>
+    <h1 className="page-title">Practice projects</h1>
     <p className="subtitle">Open a project to choose a specific file, or start full practice at the next unfinished file.</p>
     <div className="grid grid-3">{query.data?.map(project=>{
       const progress=project.fileCount?project.completedFiles/project.fileCount*100:0;
       return <article className="card" key={project.id}>
-        <span className="tag">{project.difficulty}</span>
+        <span className="tag">{project.languageId === "python" ? "Python" : "Java"} · {project.difficulty}</span>
         <h2><Link href={`/projects/${project.id}`}>{project.name}</Link></h2>
         <p className="muted">{project.description}</p>
         <p>{project.fileCount} reference files</p>

@@ -1,8 +1,9 @@
 import type { CalculatedMetrics, ComparisonResult, MetricsInput } from "@codemuscle/shared";
 
-const TOKEN = /(?:\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(?:[A-Za-z_$][\w$]*)|(?:\d+(?:\.\d+)?)|(?:==|!=|<=|>=|->|::|&&|\|\||\+\+|--)|[^\s]/g;
+const TOKEN = /(?:\/\/[^\n]*|\/\*[\s\S]*?\*\/|#[^\n]*)|(?:[A-Za-z_$][\w$]*)|(?:\d+(?:\.\d+)?)|(?:==|!=|<=|>=|:=|->|::|&&|\|\||\+\+|--|\*\*)|[^\s]/g;
 export const tokenizeJava = (code: string, comments = false) =>
-  [...code.matchAll(TOKEN)].map(match => match[0]!).filter(token => comments || !token.startsWith("//") && !token.startsWith("/*"));
+  [...code.matchAll(TOKEN)].map(match => match[0]!).filter(token => comments || !token.startsWith("//") && !token.startsWith("/*") && !token.startsWith("#"));
+export const tokenizePython = tokenizeJava;
 
 export function compareCode(typed: string, reference: string, mode: "syntax" | "strict" = "syntax"): ComparisonResult {
   const typedUnits = mode === "strict" ? [...typed] : tokenizeJava(typed);

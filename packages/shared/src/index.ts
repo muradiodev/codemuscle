@@ -69,7 +69,7 @@ export const metricsInputSchema = z.object({
 export type MetricsInput = z.infer<typeof metricsInputSchema>;
 
 export interface TrainingFile {
-  id: string; projectId: string; path: string; fileName: string; language: "java";
+  id: string; projectId: string; path: string; fileName: string; language: "java" | "python";
   difficulty: typeof difficulties[number]; order: number; estimatedMinutes: number;
   topics: string[]; referenceCode: string; enabled: boolean; contentHash: string;
 }

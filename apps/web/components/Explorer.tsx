@@ -15,10 +15,14 @@ import type { TreeNode } from "@codemuscle/shared";
 export type FileProgress = { completed?: boolean; accuracy?: number };
 
 const PROJECTS = [
-  { id: "employee-hr-system", name: "Employee HR Management" },
-  { id: "logistics-system", name: "Logistics & Shipment" },
-  { id: "energy-billing-system", name: "Energy & Billing" },
-  { id: "b2b-saas-platform", name: "Multi-Tenant SaaS" }
+  { id: "employee-hr-system", name: "Employee HR Management", languageId: "java" },
+  { id: "logistics-system", name: "Logistics & Shipment", languageId: "java" },
+  { id: "energy-billing-system", name: "Energy & Billing", languageId: "java" },
+  { id: "b2b-saas-platform", name: "Multi-Tenant SaaS", languageId: "java" },
+  { id: "python-employee-hr-system", name: "Employee HR Management", languageId: "python" },
+  { id: "python-logistics-system", name: "Logistics & Shipment", languageId: "python" },
+  { id: "python-energy-billing-system", name: "Energy & Billing", languageId: "python" },
+  { id: "python-b2b-saas-platform", name: "Multi-Tenant SaaS", languageId: "python" }
 ] as const;
 
 export function Explorer({
@@ -26,6 +30,7 @@ export function Explorer({
   currentFile,
   onFile,
   projectId,
+  languageId = "java",
   onProject,
   fileProgress,
   width = 270,
@@ -37,6 +42,7 @@ export function Explorer({
   currentFile: string;
   onFile: (id: string) => void;
   projectId: string;
+  languageId?: "java" | "python";
   onProject: (id: string) => void;
   fileProgress?: Record<string, FileProgress>;
   width?: number;
@@ -148,7 +154,7 @@ export function Explorer({
         ) : progress?.completed ? (
           <CheckCircle2 size={15} className="status-good" />
         ) : (
-          <JavaFileIcon path={node.path} fileName={node.name} />
+          <FileKindIcon path={node.path} fileName={node.name} languageId={languageId} />
         );
       return (
         <div key={node.path} className="tree-node">
@@ -185,14 +191,19 @@ export function Explorer({
   return (
     <aside className="explorer" style={{ width }} aria-label="Explorer">
       <div className="explorer-head">
-        <select aria-label="Language" defaultValue="java">
+        <select
+          aria-label="Language"
+          value={languageId}
+          onChange={event => {
+            const project = PROJECTS.find(item => item.languageId === event.target.value);
+            if (project) onProject(project.id);
+          }}
+        >
           <option value="java">Java</option>
-          <option value="python" disabled>
-            Python — Coming soon
-          </option>
+          <option value="python">Python</option>
         </select>
         <select aria-label="Project" value={projectId} onChange={e => onProject(e.target.value)}>
-          {PROJECTS.map(project => (
+          {PROJECTS.filter(project => project.languageId === languageId).map(project => (
             <option key={project.id} value={project.id}>
               {project.name}
             </option>
@@ -328,6 +339,33 @@ function JavaFileIcon({ path, fileName }: { path: string; fileName: string }) {
       aria-label={kind.label}
     >
       {kind.shortLabel}
+    </span>
+  );
+}
+
+function FileKindIcon({
+  path,
+  fileName,
+  languageId
+}: {
+  path: string;
+  fileName: string;
+  languageId: "java" | "python";
+}) {
+  if (languageId === "java") return <JavaFileIcon path={path} fileName={fileName} />;
+  const normalized = path.replaceAll("\\", "/").toLowerCase();
+  const label = normalized.includes("/security/")
+    ? "Python security module"
+    : fileName === "router.py"
+      ? "FastAPI router"
+      : fileName === "models.py"
+        ? "Python domain models"
+        : fileName === "services.py"
+          ? "Python service module"
+          : "Python module";
+  return (
+    <span className="java-kind-icon class" title={label} aria-label={label}>
+      Py
     </span>
   );
 }

@@ -1,0 +1,218 @@
+{
+  "id": "python-energy-billing-system",
+  "name": "Energy Consumption and Billing System (Python)",
+  "language": "python",
+  "version": "1.0.0",
+  "description": "FastAPI energy platform with meters, readings, tariffs, invoices, consumption analytics, and JWT authentication.",
+  "difficulty": "advanced",
+  "order": 103,
+  "files": [
+    {
+      "path": "app/main.py",
+      "difficulty": "warmup",
+      "order": 1,
+      "estimatedMinutes": 4,
+      "topics": [
+        "fastapi",
+        "application-factory",
+        "routing"
+      ]
+    },
+    {
+      "path": "app/config.py",
+      "difficulty": "warmup",
+      "order": 2,
+      "estimatedMinutes": 4,
+      "topics": [
+        "pydantic-settings",
+        "configuration",
+        "environment"
+      ]
+    },
+    {
+      "path": "app/exceptions.py",
+      "difficulty": "intermediate",
+      "order": 3,
+      "estimatedMinutes": 6,
+      "topics": [
+        "fastapi",
+        "exception-handling",
+        "http"
+      ]
+    },
+    {
+      "path": "app/security/models.py",
+      "difficulty": "intermediate",
+      "order": 4,
+      "estimatedMinutes": 4,
+      "topics": [
+        "dataclasses",
+        "security",
+        "immutability"
+      ]
+    },
+    {
+      "path": "app/security/schemas.py",
+      "difficulty": "warmup",
+      "order": 5,
+      "estimatedMinutes": 6,
+      "topics": [
+        "pydantic",
+        "validation",
+        "authentication"
+      ]
+    },
+    {
+      "path": "app/security/repository.py",
+      "difficulty": "intermediate",
+      "order": 6,
+      "estimatedMinutes": 4,
+      "topics": [
+        "repository-pattern",
+        "thread-safety",
+        "collections"
+      ]
+    },
+    {
+      "path": "app/security/passwords.py",
+      "difficulty": "advanced",
+      "order": 7,
+      "estimatedMinutes": 5,
+      "topics": [
+        "security",
+        "password-hashing",
+        "scrypt"
+      ]
+    },
+    {
+      "path": "app/security/service.py",
+      "difficulty": "advanced",
+      "order": 8,
+      "estimatedMinutes": 12,
+      "topics": [
+        "jwt",
+        "authentication",
+        "services"
+      ]
+    },
+    {
+      "path": "app/security/container.py",
+      "difficulty": "warmup",
+      "order": 9,
+      "estimatedMinutes": 4,
+      "topics": [
+        "dependency-injection",
+        "composition-root"
+      ]
+    },
+    {
+      "path": "app/security/dependencies.py",
+      "difficulty": "advanced",
+      "order": 10,
+      "estimatedMinutes": 6,
+      "topics": [
+        "fastapi",
+        "oauth2",
+        "dependency-injection"
+      ]
+    },
+    {
+      "path": "app/security/router.py",
+      "difficulty": "intermediate",
+      "order": 11,
+      "estimatedMinutes": 5,
+      "topics": [
+        "fastapi",
+        "routing",
+        "authentication"
+      ]
+    },
+    {
+      "path": "app/energy/models.py",
+      "difficulty": "intermediate",
+      "order": 12,
+      "estimatedMinutes": 12,
+      "topics": [
+        "dataclasses",
+        "enums",
+        "domain-modeling"
+      ]
+    },
+    {
+      "path": "app/energy/schemas.py",
+      "difficulty": "warmup",
+      "order": 13,
+      "estimatedMinutes": 7,
+      "topics": [
+        "pydantic",
+        "validation",
+        "dto"
+      ]
+    },
+    {
+      "path": "app/energy/repositories.py",
+      "difficulty": "intermediate",
+      "order": 14,
+      "estimatedMinutes": 9,
+      "topics": [
+        "repository-pattern",
+        "protocols",
+        "collections"
+      ]
+    },
+    {
+      "path": "app/energy/strategies.py",
+      "difficulty": "advanced",
+      "order": 15,
+      "estimatedMinutes": 5,
+      "topics": [
+        "strategy-pattern",
+        "decimal",
+        "billing"
+      ]
+    },
+    {
+      "path": "app/energy/mappers.py",
+      "difficulty": "warmup",
+      "order": 16,
+      "estimatedMinutes": 4,
+      "topics": [
+        "mapping",
+        "dto"
+      ]
+    },
+    {
+      "path": "app/energy/services.py",
+      "difficulty": "advanced",
+      "order": 17,
+      "estimatedMinutes": 10,
+      "topics": [
+        "services",
+        "billing",
+        "dependency-injection"
+      ]
+    },
+    {
+      "path": "app/energy/analytics.py",
+      "difficulty": "intermediate",
+      "order": 18,
+      "estimatedMinutes": 4,
+      "topics": [
+        "aggregation",
+        "time-series",
+        "decimal"
+      ]
+    },
+    {
+      "path": "app/energy/router.py",
+      "difficulty": "advanced",
+      "order": 19,
+      "estimatedMinutes": 7,
+      "topics": [
+        "fastapi",
+        "rest",
+        "dependency-injection"
+      ]
+    }
+  ]
+}

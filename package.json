@@ -20,7 +20,8 @@
     "db:generate": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api exec prisma generate",
     "db:migrate": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api db:migrate",
     "db:seed": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api db:seed",
-    "db:reset": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api db:reset"
+    "db:reset": "npx --yes cross-env@7.0.3 DATABASE_URL=postgresql://codemuscle:codemuscle@localhost:5432/codemuscle npx --yes pnpm@10.14.0 --filter @codemuscle/api db:reset",
+    "deploy:live": "powershell -NoProfile -ExecutionPolicy Bypass -File deploy/Deploy-CodeMuscle.ps1"
   },
   "devDependencies": {
     "@playwright/test": "^1.54.2",

@@ -1,0 +1,14 @@
+---
+description: Deploy CodeMuscle live/prod using the local gitignored secrets kit
+alwaysApply: true
+---
+
+# CodeMuscle deploy
+
+When the user says deploy, ship, refresh, or update **prod / production / live** for CodeMuscle:
+
+1. Run `deploy/Deploy-CodeMuscle.ps1` from the repo root. Do not ask for a manual SSH walkthrough if `deploy/secrets/` already has keys and `.env`.
+2. The public site is on **DEVHUBPOINT01** (`/var/www/html/devpractise2hands`): https://codemuscle.deviofy.com and https://apicodemuscle.deviofy.com
+3. DEV SSH is often firewalled; jump through mgmt with `deploy/secrets/ssh.config`.
+4. Touch only the `devpractise2hands` Compose project. Do not restart Hubpoint, MySQL, landing, or other containers. Do not overwrite the live nginx/TLS vhost.
+5. Never commit `deploy/secrets/`, `.env`, `.env.deploy`, SSH keys, or `Hubpoint_Infrastructure_CICD_Server_Operations_Runbook.md`.

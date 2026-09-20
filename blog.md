@@ -88,7 +88,7 @@ It is closer to deliberate practice than ordinary project work.
 
 ## What is included
 
-The first CodeMuscle release focuses on Java 21 and Spring Boot.
+CodeMuscle supports Java 21 / Spring Boot and Python 3.12 / FastAPI.
 
 It includes four complete practice codebases:
 
@@ -97,7 +97,7 @@ It includes four complete practice codebases:
 - Energy Consumption and Billing System
 - Multi-Tenant B2B SaaS Platform
 
-Together, they provide 112 practice files covering realistic backend patterns:
+Together, they provide 112 Java practice files and 77 Python practice files covering realistic backend patterns:
 
 - Controllers with complete CRUD operations
 - Services and service implementations
@@ -119,10 +119,10 @@ The projects are designed as coherent applications rather than disconnected synt
 The practice screen uses a three-pane layout:
 
 - A repository explorer
-- An editable Monaco-based Java editor
+- An editable Monaco-based Java and Python editor
 - A read-only reference editor
 
-The explorer remembers which folders you expanded for each project. Java files have role-specific icons for controllers, repositories, services, implementations, DTOs, entities, enums, configurations, exceptions, and mappers.
+The explorer remembers which folders you expanded for each project. Java files have role-specific icons, while Python files are identified as Python modules.
 
 The editor uses an IntelliJ-inspired Java color palette and provides deterministic completion for:
 
@@ -160,7 +160,7 @@ CodeMuscle therefore tracks engineering-focused metrics:
 - Consistency over recent sessions
 - Improvement against previous attempts and personal baselines
 
-The default comparison mode ignores formatting differences and compares meaningful Java tokens. A strict mode is also available when exact formatting and comments matter.
+The default comparison mode ignores formatting differences and compares meaningful Java or Python tokens. A strict mode is also available when exact formatting and comments matter.
 
 The purpose of these measurements is not to create an arbitrary score. They should answer practical questions:
 
@@ -210,11 +210,11 @@ If CodeMuscle is useful to you:
 
 - Star the repository
 - Share feedback or an issue
-- Suggest realistic Java patterns worth practising
+- Suggest realistic Java or Python patterns worth practising
 - Contribute improvements
 - Share the project with another developer who feels their manual fluency slipping
 
-Python is visible in the product as **Coming soon**. Java and Spring Boot are the current focus.
+Python is fully available through four equivalent FastAPI practice projects.
 
 AI can help us produce more software. It should not quietly take away our confidence that we can still write it.
 
@@ -255,13 +255,13 @@ So I built **CodeMuscle**, a manual coding practice platform for experienced dev
 It is not LeetCode, a quiz, or a tutorial. The reference implementation is always visible. You manually type the same code in an IDE-style editor and measure:
 
 - Correct and raw characters per minute
-- Character and Java-token accuracy
+- Character and syntax-token accuracy
 - Manual typing versus autocomplete usage
 - Errors and recovery time
 - Session consistency
 - Improvement over previous attempts
 
-The current version focuses on Java 21 and Spring Boot. It has four coherent practice projects and 112 files covering controllers, services, repositories, DTOs, entities, MapStruct, Spring Security/JWT, validation, streams, collections, generics, `BigDecimal`, multi-tenancy, and other patterns used in normal backend work.
+The current version has four Java 21 / Spring Boot projects and four Python 3.12 / FastAPI projects. Across 189 files, they cover controllers or routers, services, repositories, DTOs or Pydantic schemas, domain models, JWT security, validation, collections, billing, multi-tenancy, and other patterns used in normal backend work.
 
 The Monaco editor provides deterministic IDE-style completion, but no AI-generated code. Paste is blocked by default. Progress and drafts can synchronize across devices, and stale drafts cannot silently overwrite newer ones.
 
@@ -285,9 +285,9 @@ I built **CodeMuscle** to practise that skill directly:
 
 **https://github.com/muradiodev/codemuscle**
 
-It shows realistic reference code beside a Monaco editor. You manually type the implementation while it measures Java-token accuracy, speed, errors, recovery time, and autocomplete dependency.
+It shows realistic reference code beside a Monaco editor. You manually type the implementation while it measures syntax-token accuracy, speed, errors, recovery time, and autocomplete dependency.
 
-The current version includes 112 Java 21/Spring Boot files across four realistic backend projects. Completion is deterministic—no LLM—and paste is blocked by default.
+The current version includes 112 Java 21 / Spring Boot files and 77 Python 3.12 / FastAPI files across eight realistic backend projects. Completion is deterministic—no LLM—and paste is blocked by default.
 
 It is not anti-AI. The idea is simple: use AI for leverage, but practise manually to preserve capability.
 
@@ -301,7 +301,7 @@ Have AI coding tools changed your manual coding fluency?
 
 AI made me faster at shipping code, but less fluent at writing it from an empty editor.
 
-So I built CodeMuscle: deliberate manual coding practice for experienced developers. It uses realistic Java/Spring Boot projects, an IDE-style editor, deterministic autocomplete, and metrics for speed, accuracy, recovery time, and autocomplete dependency.
+So I built CodeMuscle: deliberate manual coding practice for experienced developers. It uses realistic Java / Spring Boot and Python / FastAPI projects, an IDE-style editor, deterministic autocomplete, and metrics for speed, accuracy, recovery time, and autocomplete dependency.
 
 Use AI for leverage. Practise manually to preserve capability.
 

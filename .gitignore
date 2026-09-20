@@ -12,5 +12,17 @@ apps/api/prisma/dev.db
 .idea
 **/target/
 *.class
+__pycache__/
+*.py[cod]
 .DS_Store
 *.tsbuildinfo
+
+# Operator secrets — never commit
+deploy/secrets/**
+!deploy/secrets/.gitignore
+!deploy/secrets/README.md
+deploy/*.tar.gz
+Hubpoint_Infrastructure_CICD_Server_Operations_Runbook.md
+**/*_key
+**/*.pem
+**/*.ppk
